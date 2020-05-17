@@ -10,6 +10,7 @@ if not os.path.exists(root_font_dir):
     os.makedirs(os.path.join(root_font_dir, 'test'))
 
 retrieved_count = 0
+
 for line in glyphazzn_url_lines:
     font_id, split, url = line.strip().split(', ')
     font_name = url.split('/')[-1]
@@ -23,5 +24,7 @@ for line in glyphazzn_url_lines:
     retrieved_glyphazzn_url_lines.write(line)
     if retrieved_count % 10 == 0:
         print(retrieved_count)
+
 print("Retrieved", retrieved_count)
+
 retrieved_glyphazzn_url_lines.close()

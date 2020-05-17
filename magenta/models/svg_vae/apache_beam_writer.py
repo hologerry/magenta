@@ -1,8 +1,8 @@
 import apache_beam as beam
 import os
 import pyarrow
-glyph_list = []
-fontdirs = []
+
+# Write apache beam parquetio
 '''
 {'uni': int64,  # unicode value of this glyph
 'width': int64,  # width of this glyph's viewport (provided by fontforge)
@@ -11,34 +11,42 @@ fontdirs = []
 'id': binary/str,  # id of this glyph
 'binary_fp': binary/str}  # font identifier (provided in glyphazzn_urls.txt)
 '''
-for root, dirs, files in os.walk('svgvae_need_format/train/'):
-   for dir in dirs:
-       fontdirs.append(dir)
-fontdirs.sort()
-for footdir in fontdirs:
-   cur_path = 'svgvae_need_format/train/' + footdir + '/'
-   for idx in range(1, 52 + 1):
-       f = open(cur_path + '/' + footdir + '-' + f'{idx:02d}' + '.txt')
-       lines = f.read().split('\n')
-       g_idx_dict = {}
-       g_idx_dict['uni'] = int(lines[0])
-       g_idx_dict['width'] = int(lines[1])
-       g_idx_dict['vwidth'] = int(lines[2])
-       g_idx_dict['id'] = lines[3]
-       f_sfd = open(cur_path + '/' + footdir + '-' + f'{idx:02d}' + '.sfd', mode='rb')
-       g_idx_dict['sfd'] = f_sfd.read()
-       g_idx_dict['binary_fp'] = lines[4]
-       # print(g_idx_dict)
-       glyph_list.append(g_idx_dict)
-       f.close()
-       f_sfd.close()
+
+glyph_list = []
+fontdirs = []
+
+sfd_dir = 'svg_vae_data/sfd_font_glyphs_mp'
+font_id_split_names = open('svg_vae_data/font_id_split_name.txt', 'r').readlines()
+
+for id_split_name in font_id_split_names:
+    font_id = id_split_name.strip().split(', ')[0]
+    split = id_split_name.strip().split(', ')[1]
+
+    cur_font_path = os.path.join(sfd_dir, split, font_id)
+    for char_id in range(52):
+        char_des = open(os.path.join(cur_font_path, '{}_{:02d}.txt'.format(font_id, char_id)), 'r')
+        lines = char_des.readlines()
+        g_idx_dict = {}
+        g_idx_dict['uni'] = int(lines[0].strip())
+        g_idx_dict['width'] = int(lines[1].strip())
+        g_idx_dict['vwidth'] = int(lines[2].strip())
+        g_idx_dict['id'] = lines[3].strip()
+
+        f_sfd = open(os.path.join(cur_font_path, '{}_{:02d}.sfd'.format(font_id, char_id)), mode='rb')
+        g_idx_dict['sfd'] = f_sfd.read()
+        g_idx_dict['binary_fp'] = lines[4].strip()
+        # print(g_idx_dict)
+        glyph_list.append(g_idx_dict)
+
+        char_des.close()
+        f_sfd.close()
 
 with beam.Pipeline() as p:
-   records = p | 'Read' >> beam.Create(glyph_list)
-   _ = records | 'Write' >> beam.io.WriteToParquet('glyphs-parquetio',
-       pyarrow.schema(
-           [('uni', pyarrow.int64()), ('width', pyarrow.int64()), ('vwidth', pyarrow.int64()),
-            ('sfd', pyarrow.string()), ('id', pyarrow.string()), ('binary_fp', pyarrow.string())]
-       )
-   )
+    records = p | 'Read' >> beam.Create(glyph_list)
+    _ = records | 'Write' >> beam.io.WriteToParquet('svg_vae_data/glyphs-parquetio',
+        pyarrow.schema(
+            [('uni', pyarrow.int64()), ('width', pyarrow.int64()), ('vwidth', pyarrow.int64()),
+             ('sfd', pyarrow.string()), ('id', pyarrow.string()), ('binary_fp', pyarrow.string())]
+        )
+    )
 
