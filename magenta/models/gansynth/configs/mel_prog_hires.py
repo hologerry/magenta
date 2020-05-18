@@ -63,8 +63,8 @@ hparams['scale_base'] = 2
 hparams['num_resolutions'] = 7
 
 if hifreqres:
-  hparams['start_height'] = 2
-  hparams['start_width'] = 16
+    hparams['start_height'] = 2
+    hparams['start_width'] = 16
 else:
-  hparams['start_height'] = 4
-  hparams['start_width'] = 8
+    hparams['start_height'] = 4
+    hparams['start_width'] = 8

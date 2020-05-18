@@ -17,7 +17,7 @@
 
 from magenta.models.onsets_frames_transcription import constants
 from magenta.music.protobuf import music_pb2
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf  # noqa
 
 # Names for pitches in the Groove MIDI Dataset and Expanded Groove MIDI Dataset.
 GROOVE_PITCH_NAMES = {
@@ -99,64 +99,64 @@ def map_pianoroll(pianoroll,
                   mapping_name,
                   reduce_mode,
                   min_pitch=constants.MIN_MIDI_PITCH):
-  """Return a mapped pianoroll.
+    """Return a mapped pianoroll.
 
-  The given mapping is a list of pitch classes, each with a base pitch. The
-  pianoroll is a tensor of prediction of the form frame X pitch. All pitches are
-  mapped to the base pitches in the provided mapping, and all other pitches are
-  zeroed out.
+    The given mapping is a list of pitch classes, each with a base pitch. The
+    pianoroll is a tensor of prediction of the form frame X pitch. All pitches are
+    mapped to the base pitches in the provided mapping, and all other pitches are
+    zeroed out.
 
-  Args:
-    pianoroll: A tensor of onset predictions of the form frame X pitch.
-    mapping_name: Which mapping from HIT_MAPS to use.
-    reduce_mode: If 'any', treats values as booleans and uses reduce_any. 'any'
-      is appropriate for mapping note pianorolls. If 'max', treats values as
-      floats and uses reduce_max. 'max' is appropriate for mapping velocity
-      pianorolls.
-    min_pitch: Used to offset MIDI pitches for the pianoroll.
+    Args:
+      pianoroll: A tensor of onset predictions of the form frame X pitch.
+      mapping_name: Which mapping from HIT_MAPS to use.
+      reduce_mode: If 'any', treats values as booleans and uses reduce_any. 'any'
+        is appropriate for mapping note pianorolls. If 'max', treats values as
+        floats and uses reduce_max. 'max' is appropriate for mapping velocity
+        pianorolls.
+      min_pitch: Used to offset MIDI pitches for the pianoroll.
 
-  Returns:
-    mapped_onset_predictions: The mapped onset_predictions.
-  """
-  mapping = []
-  for m in HIT_MAPS[mapping_name]:
-    mapping.append([p - min_pitch for p in m])
+    Returns:
+      mapped_onset_predictions: The mapped onset_predictions.
+    """
+    mapping = []
+    for m in HIT_MAPS[mapping_name]:
+        mapping.append([p - min_pitch for p in m])
 
-  mapped_pitches = {pitches[0]: pitches for pitches in mapping}
-  mapped_predictions = []
-  for pitch in range(pianoroll.shape[1]):
-    if pitch in mapped_pitches:
-      if reduce_mode == 'any':
-        mapped_predictions.append(
-            tf.cast(
-                tf.math.reduce_any(
+    mapped_pitches = {pitches[0]: pitches for pitches in mapping}
+    mapped_predictions = []
+    for pitch in range(pianoroll.shape[1]):
+        if pitch in mapped_pitches:
+            if reduce_mode == 'any':
+                mapped_predictions.append(
                     tf.cast(
-                        tf.gather(pianoroll, mapped_pitches[pitch], axis=1),
-                        tf.bool),
-                    axis=1), pianoroll.dtype))
-      elif reduce_mode == 'max':
-        mapped_predictions.append(
-            tf.math.reduce_max(
-                tf.gather(pianoroll, mapped_pitches[pitch], axis=1), axis=1))
-      else:
-        raise ValueError('Unknown reduce_mode: {}'.format(reduce_mode))
-    else:
-      mapped_predictions.append(tf.zeros_like(pianoroll[:, pitch]))
-  return tf.stack(mapped_predictions, axis=1)
+                        tf.math.reduce_any(
+                            tf.cast(
+                                tf.gather(pianoroll, mapped_pitches[pitch], axis=1),
+                                tf.bool),
+                            axis=1), pianoroll.dtype))
+            elif reduce_mode == 'max':
+                mapped_predictions.append(
+                    tf.math.reduce_max(
+                        tf.gather(pianoroll, mapped_pitches[pitch], axis=1), axis=1))
+            else:
+                raise ValueError('Unknown reduce_mode: {}'.format(reduce_mode))
+        else:
+            mapped_predictions.append(tf.zeros_like(pianoroll[:, pitch]))
+    return tf.stack(mapped_predictions, axis=1)
 
 
 def map_sequences(sequence_str, mapping_name):
-  """Map the NoteSequence for drums."""
-  mapping = HIT_MAPS[mapping_name]
-  drums_sequence = music_pb2.NoteSequence.FromString(sequence_str)
-  simple_mapping = {}
-  for pitch_class in mapping:
-    for pitch in pitch_class:
-      simple_mapping[pitch] = pitch_class[0]
+    """Map the NoteSequence for drums."""
+    mapping = HIT_MAPS[mapping_name]
+    drums_sequence = music_pb2.NoteSequence.FromString(sequence_str)
+    simple_mapping = {}
+    for pitch_class in mapping:
+        for pitch in pitch_class:
+            simple_mapping[pitch] = pitch_class[0]
 
-  for note in drums_sequence.notes:
-    if note.pitch not in simple_mapping:
-      tf.logging.warn('Could not find mapping for pitch %d', note.pitch)
-    else:
-      note.pitch = simple_mapping[note.pitch]
-  return drums_sequence.SerializeToString()
+    for note in drums_sequence.notes:
+        if note.pitch not in simple_mapping:
+            tf.logging.warn('Could not find mapping for pitch %d', note.pitch)
+        else:
+            note.pitch = simple_mapping[note.pitch]
+    return drums_sequence.SerializeToString()

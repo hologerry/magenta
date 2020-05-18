@@ -24,7 +24,7 @@ theano implementation.
 """
 
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf  # noqa
 from tensorflow.contrib import layers as contrib_layers
 
 

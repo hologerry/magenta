@@ -15,6 +15,6 @@
 """Imports Magenta models so that they register with Tensor2Tensor."""
 
 # pylint: disable=unused-import
-from magenta.models.score2perf import score2perf_hparams
+from magenta.models.score2perf import score2perf_hparams  # noqa
 
 # pylint: enable=unused-import

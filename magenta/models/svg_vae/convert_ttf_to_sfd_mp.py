@@ -2,10 +2,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import fontforge  # need python2, apt install python-fontforge
+import fontforge  # noqa
 import os
 import multiprocessing as mp
 
+# need python2, apt install python-fontforge
 
 alphabet_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 valid_fonts = open('svg_vae_data/font_id_split_name.txt', 'r').readlines()
@@ -74,10 +75,10 @@ def process(process_id, line_num_p_process):
 
         cur_font.close()
 
+
 processes = [mp.Process(target=process, args=(pid, lines_num_per_process)) for pid in range(process_nums+1)]
 
 for p in processes:
     p.start()
 for p in processes:
     p.join()
-

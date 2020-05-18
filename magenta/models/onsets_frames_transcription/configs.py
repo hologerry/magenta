@@ -24,7 +24,7 @@ from magenta.common import tf_utils
 from magenta.models.onsets_frames_transcription import audio_transform
 from magenta.models.onsets_frames_transcription import model
 from magenta.models.onsets_frames_transcription import model_tpu
-from tensorflow.contrib import training as contrib_training
+from tensorflow.contrib import training as contrib_training  # noqa
 
 Config = collections.namedtuple('Config', ('model_fn', 'hparams'))
 

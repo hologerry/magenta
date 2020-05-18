@@ -23,7 +23,7 @@ import os
 from magenta.models.drums_rnn import drums_rnn_config_flags
 from magenta.models.drums_rnn import drums_rnn_pipeline
 from magenta.pipelines import pipeline
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf  # noqa
 
 flags = tf.app.flags
 FLAGS = tf.app.flags.FLAGS
@@ -43,23 +43,23 @@ flags.DEFINE_string(
 
 
 def main(unused_argv):
-  tf.logging.set_verbosity(FLAGS.log)
+    tf.logging.set_verbosity(FLAGS.log)
 
-  config = drums_rnn_config_flags.config_from_flags()
-  pipeline_instance = drums_rnn_pipeline.get_pipeline(
-      config, FLAGS.eval_ratio)
+    config = drums_rnn_config_flags.config_from_flags()
+    pipeline_instance = drums_rnn_pipeline.get_pipeline(
+        config, FLAGS.eval_ratio)
 
-  FLAGS.input = os.path.expanduser(FLAGS.input)
-  FLAGS.output_dir = os.path.expanduser(FLAGS.output_dir)
-  pipeline.run_pipeline_serial(
-      pipeline_instance,
-      pipeline.tf_record_iterator(FLAGS.input, pipeline_instance.input_type),
-      FLAGS.output_dir)
+    FLAGS.input = os.path.expanduser(FLAGS.input)
+    FLAGS.output_dir = os.path.expanduser(FLAGS.output_dir)
+    pipeline.run_pipeline_serial(
+        pipeline_instance,
+        pipeline.tf_record_iterator(FLAGS.input, pipeline_instance.input_type),
+        FLAGS.output_dir)
 
 
 def console_entry_point():
-  tf.app.run(main)
+    tf.app.run(main)
 
 
 if __name__ == '__main__':
-  console_entry_point()
+    console_entry_point()

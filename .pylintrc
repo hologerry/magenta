@@ -157,7 +157,7 @@ deprecated-modules=regsub,TERMIOS,Bastion,rexec,sets
 [FORMAT]
 
 # Maximum number of characters on a single line.
-max-line-length=80
+max-line-length=120
 
 # Regexp for a line that is allowed to be longer than the limit.
 # This "ignore" regex is today composed of several independent parts:
@@ -178,7 +178,7 @@ ignore-long-lines=(?x)
 max-module-lines=99999
 
 # String used as indentation unit. We differ from PEP8's normal 4 spaces.
-indent-string='  '
+indent-string='    '
 
 # Do not warn about multiple statements on a single line for constructs like
 #   if test: stmt

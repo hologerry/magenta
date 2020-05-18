@@ -21,21 +21,19 @@ from __future__ import print_function
 from magenta.models.onsets_frames_transcription import configs
 from magenta.models.onsets_frames_transcription import create_dataset
 from magenta.models.onsets_frames_transcription import data
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf  # noqa
 
 
 def main(argv):
-  del argv
-
-
-  create_dataset.pipeline(
-      configs.CONFIG_MAP, configs.DATASET_CONFIG_MAP, data.preprocess_example,
-      data.input_tensors_to_example)
+    del argv
+    create_dataset.pipeline(
+        configs.CONFIG_MAP, configs.DATASET_CONFIG_MAP, data.preprocess_example,
+        data.input_tensors_to_example)
 
 
 def console_entry_point():
-  tf.app.run(main)
+    tf.app.run(main)
 
 
 if __name__ == '__main__':
-  console_entry_point()
+    console_entry_point()

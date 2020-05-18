@@ -20,7 +20,7 @@ import os
 
 from absl import logging
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf  # noqa
 
 
 def _range_normalizer(x, margin):

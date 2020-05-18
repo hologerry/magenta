@@ -19,37 +19,37 @@ import numpy as np
 
 
 def synthesize(sequence, sample_rate, wave=np.sin):
-  """Synthesizes audio from a music_pb2.NoteSequence using a waveform.
+    """Synthesizes audio from a music_pb2.NoteSequence using a waveform.
 
-  This uses the pretty_midi `synthesize` method. Sound quality will be lower
-  than using `fluidsynth` with a good SoundFont.
+    This uses the pretty_midi `synthesize` method. Sound quality will be lower
+    than using `fluidsynth` with a good SoundFont.
 
-  Args:
-    sequence: A music_pb2.NoteSequence to synthesize.
-    sample_rate: An integer audio sampling rate in Hz.
-    wave: Function that returns a periodic waveform.
+    Args:
+      sequence: A music_pb2.NoteSequence to synthesize.
+      sample_rate: An integer audio sampling rate in Hz.
+      wave: Function that returns a periodic waveform.
 
-  Returns:
-    A 1-D numpy float array containing the synthesized waveform.
-  """
-  midi = midi_io.note_sequence_to_pretty_midi(sequence)
-  return midi.synthesize(fs=sample_rate, wave=wave)
+    Returns:
+      A 1-D numpy float array containing the synthesized waveform.
+    """
+    midi = midi_io.note_sequence_to_pretty_midi(sequence)
+    return midi.synthesize(fs=sample_rate, wave=wave)
 
 
 def fluidsynth(sequence, sample_rate, sf2_path=None):
-  """Synthesizes audio from a music_pb2.NoteSequence using FluidSynth.
+    """Synthesizes audio from a music_pb2.NoteSequence using FluidSynth.
 
-  This uses the pretty_midi `fluidsynth` method. In order to use this synth,
-  you must have FluidSynth and pyFluidSynth installed.
+    This uses the pretty_midi `fluidsynth` method. In order to use this synth,
+    you must have FluidSynth and pyFluidSynth installed.
 
-  Args:
-    sequence: A music_pb2.NoteSequence to synthesize.
-    sample_rate: An integer audio sampling rate in Hz.
-    sf2_path: A string path to a SoundFont. If None, uses the TimGM6mb.sf2 file
-        included with pretty_midi.
+    Args:
+      sequence: A music_pb2.NoteSequence to synthesize.
+      sample_rate: An integer audio sampling rate in Hz.
+      sf2_path: A string path to a SoundFont. If None, uses the TimGM6mb.sf2 file
+          included with pretty_midi.
 
-  Returns:
-    A 1-D numpy float array containing the synthesized waveform.
-  """
-  midi = midi_io.note_sequence_to_pretty_midi(sequence)
-  return midi.fluidsynth(fs=sample_rate, sf2_path=sf2_path)
+    Returns:
+      A 1-D numpy float array containing the synthesized waveform.
+    """
+    midi = midi_io.note_sequence_to_pretty_midi(sequence)
+    return midi.fluidsynth(fs=sample_rate, sf2_path=sf2_path)

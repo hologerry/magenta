@@ -15,7 +15,7 @@
 """Provides a class, defaults, and utils for improv RNN model configuration."""
 
 from magenta.models.improv_rnn import improv_rnn_model
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf  # noqa
 
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string(
@@ -39,26 +39,26 @@ tf.app.flags.DEFINE_string(
 
 
 class ImprovRnnConfigError(Exception):
-  pass
+    pass
 
 
 def config_from_flags():
-  """Parses flags and returns the appropriate ImprovRnnConfig.
+    """Parses flags and returns the appropriate ImprovRnnConfig.
 
-  Returns:
-    The appropriate ImprovRnnConfig based on the supplied flags.
+    Returns:
+      The appropriate ImprovRnnConfig based on the supplied flags.
 
-  Raises:
-     ImprovRnnConfigError: When an invalid config is supplied.
-  """
-  if FLAGS.config not in improv_rnn_model.default_configs:
-    raise ImprovRnnConfigError(
-        '`--config` must be one of %s. Got %s.' % (
-            improv_rnn_model.default_configs.keys(), FLAGS.config))
-  config = improv_rnn_model.default_configs[FLAGS.config]
-  config.hparams.parse(FLAGS.hparams)
-  if FLAGS.generator_id is not None:
-    config.details.id = FLAGS.generator_id
-  if FLAGS.generator_description is not None:
-    config.details.description = FLAGS.generator_description
-  return config
+    Raises:
+       ImprovRnnConfigError: When an invalid config is supplied.
+    """
+    if FLAGS.config not in improv_rnn_model.default_configs:
+        raise ImprovRnnConfigError(
+            '`--config` must be one of %s. Got %s.' % (
+                improv_rnn_model.default_configs.keys(), FLAGS.config))
+    config = improv_rnn_model.default_configs[FLAGS.config]
+    config.hparams.parse(FLAGS.hparams)
+    if FLAGS.generator_id is not None:
+        config.details.id = FLAGS.generator_id
+    if FLAGS.generator_description is not None:
+        config.details.description = FLAGS.generator_description
+    return config

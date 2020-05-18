@@ -18,8 +18,8 @@ All configs should have encode() and decode().
 """
 
 from magenta.models.nsynth import utils
-import tensorflow.compat.v1 as tf
-from tensorflow.contrib import slim as contrib_slim
+import tensorflow.compat.v1 as tf  # noqa
+from tensorflow.contrib import slim as contrib_slim  # noqa
 
 slim = contrib_slim
 
@@ -33,207 +33,207 @@ config_hparams = dict(
 
 
 def encode(x, hparams, is_training=True, reuse=False):
-  """Autoencoder encoder network.
+    """Autoencoder encoder network.
 
-  Args:
-    x: Tensor. The observed variables.
-    hparams: HParams. Hyperparameters.
-    is_training: bool. Whether batch normalization should be computed in
-        training mode. Defaults to True.
-    reuse: bool. Whether the variable scope should be reused.
-        Defaults to False.
+    Args:
+      x: Tensor. The observed variables.
+      hparams: HParams. Hyperparameters.
+      is_training: bool. Whether batch normalization should be computed in
+          training mode. Defaults to True.
+      reuse: bool. Whether the variable scope should be reused.
+          Defaults to False.
 
-  Returns:
-    The output of the encoder, i.e. a synthetic z computed from x.
-  """
-  with tf.variable_scope("encoder", reuse=reuse):
-    h = utils.conv2d(
-        x, [5, 5], [2, 2],
-        128,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        batch_norm=True,
-        scope="0")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        128,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        batch_norm=True,
-        scope="1")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        128,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        batch_norm=True,
-        scope="2")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        256,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        batch_norm=True,
-        scope="3")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        256,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        batch_norm=True,
-        scope="4")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        256,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        batch_norm=True,
-        scope="5")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        512,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        batch_norm=True,
-        scope="6")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        512,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        batch_norm=True,
-        scope="7")
-    h = utils.conv2d(
-        h, [4, 4], [2, 1],
-        512,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        batch_norm=True,
-        scope="7_1")
-    h = utils.conv2d(
-        h, [1, 1], [1, 1],
-        1024,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        batch_norm=True,
-        scope="8")
+    Returns:
+      The output of the encoder, i.e. a synthetic z computed from x.
+    """
+    with tf.variable_scope("encoder", reuse=reuse):
+        h = utils.conv2d(
+            x, [5, 5], [2, 2],
+            128,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            batch_norm=True,
+            scope="0")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            128,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            batch_norm=True,
+            scope="1")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            128,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            batch_norm=True,
+            scope="2")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            256,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            batch_norm=True,
+            scope="3")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            256,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            batch_norm=True,
+            scope="4")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            256,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            batch_norm=True,
+            scope="5")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            512,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            batch_norm=True,
+            scope="6")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            512,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            batch_norm=True,
+            scope="7")
+        h = utils.conv2d(
+            h, [4, 4], [2, 1],
+            512,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            batch_norm=True,
+            scope="7_1")
+        h = utils.conv2d(
+            h, [1, 1], [1, 1],
+            1024,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            batch_norm=True,
+            scope="8")
 
-    z = utils.conv2d(
-        h, [1, 1], [1, 1],
-        hparams.num_latent,
-        is_training,
-        activation_fn=None,
-        batch_norm=True,
-        scope="z")
-  return z
+        z = utils.conv2d(
+            h, [1, 1], [1, 1],
+            hparams.num_latent,
+            is_training,
+            activation_fn=None,
+            batch_norm=True,
+            scope="z")
+    return z
 
 
 def decode(z, batch, hparams, is_training=True, reuse=False):
-  """Autoencoder decoder network.
+    """Autoencoder decoder network.
 
-  Args:
-    z: Tensor. The latent variables.
-    batch: NSynthReader batch for pitch information.
-    hparams: HParams. Hyperparameters (unused).
-    is_training: bool. Whether batch normalization should be computed in
-        training mode. Defaults to True.
-    reuse: bool. Whether the variable scope should be reused.
-        Defaults to False.
+    Args:
+      z: Tensor. The latent variables.
+      batch: NSynthReader batch for pitch information.
+      hparams: HParams. Hyperparameters (unused).
+      is_training: bool. Whether batch normalization should be computed in
+          training mode. Defaults to True.
+      reuse: bool. Whether the variable scope should be reused.
+          Defaults to False.
 
-  Returns:
-    The output of the decoder, i.e. a synthetic x computed from z.
-  """
-  del hparams
-  with tf.variable_scope("decoder", reuse=reuse):
-    z_pitch = utils.pitch_embeddings(batch, reuse=reuse)
-    z = tf.concat([z, z_pitch], 3)
+    Returns:
+      The output of the decoder, i.e. a synthetic x computed from z.
+    """
+    del hparams
+    with tf.variable_scope("decoder", reuse=reuse):
+        z_pitch = utils.pitch_embeddings(batch, reuse=reuse)
+        z = tf.concat([z, z_pitch], 3)
 
-    h = utils.conv2d(
-        z, [1, 1], [1, 1],
-        1024,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        transpose=True,
-        batch_norm=True,
-        scope="0")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        512,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        transpose=True,
-        batch_norm=True,
-        scope="1")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        512,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        transpose=True,
-        batch_norm=True,
-        scope="2")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        256,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        transpose=True,
-        batch_norm=True,
-        scope="3")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        256,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        transpose=True,
-        batch_norm=True,
-        scope="4")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        256,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        transpose=True,
-        batch_norm=True,
-        scope="5")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        128,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        transpose=True,
-        batch_norm=True,
-        scope="6")
-    h = utils.conv2d(
-        h, [4, 4], [2, 2],
-        128,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        transpose=True,
-        batch_norm=True,
-        scope="7")
-    h = utils.conv2d(
-        h, [5, 5], [2, 2],
-        128,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        transpose=True,
-        batch_norm=True,
-        scope="8")
-    h = utils.conv2d(
-        h, [5, 5], [2, 1],
-        128,
-        is_training,
-        activation_fn=utils.leaky_relu(),
-        transpose=True,
-        batch_norm=True,
-        scope="8_1")
+        h = utils.conv2d(
+            z, [1, 1], [1, 1],
+            1024,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            transpose=True,
+            batch_norm=True,
+            scope="0")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            512,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            transpose=True,
+            batch_norm=True,
+            scope="1")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            512,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            transpose=True,
+            batch_norm=True,
+            scope="2")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            256,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            transpose=True,
+            batch_norm=True,
+            scope="3")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            256,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            transpose=True,
+            batch_norm=True,
+            scope="4")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            256,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            transpose=True,
+            batch_norm=True,
+            scope="5")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            128,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            transpose=True,
+            batch_norm=True,
+            scope="6")
+        h = utils.conv2d(
+            h, [4, 4], [2, 2],
+            128,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            transpose=True,
+            batch_norm=True,
+            scope="7")
+        h = utils.conv2d(
+            h, [5, 5], [2, 2],
+            128,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            transpose=True,
+            batch_norm=True,
+            scope="8")
+        h = utils.conv2d(
+            h, [5, 5], [2, 1],
+            128,
+            is_training,
+            activation_fn=utils.leaky_relu(),
+            transpose=True,
+            batch_norm=True,
+            scope="8_1")
 
-    xhat = utils.conv2d(
-        h, [1, 1], [1, 1],
-        1,
-        is_training,
-        activation_fn=tf.nn.sigmoid,
-        batch_norm=False,
-        scope="mag")
-  return xhat
+        xhat = utils.conv2d(
+            h, [1, 1], [1, 1],
+            1,
+            is_training,
+            activation_fn=tf.nn.sigmoid,
+            batch_norm=False,
+            scope="mag")
+    return xhat

@@ -1,9 +1,9 @@
 import os
-import sys
+import pickle
+# import sys
 
 import apache_beam as beam
 import pyarrow
-import pickle
 
 # Write apache beam parquetio
 '''
@@ -63,8 +63,6 @@ print('Submitting to beam ...')
 with beam.Pipeline() as p:
     records = p | 'Read' >> beam.Create(glyph_list)
     _ = records | 'Write' >> beam.io.WriteToParquet(target_beam_parquetio_file_prefix,
-        pyarrow.schema(
-            [('uni', pyarrow.int64()), ('width', pyarrow.int64()), ('vwidth', pyarrow.int64()),
-             ('sfd', pyarrow.string()), ('id', pyarrow.string()), ('binary_fp', pyarrow.string())]
-        )
-    )
+                                                    pyarrow.schema([('uni', pyarrow.int64()), ('width', pyarrow.int64()), ('vwidth', pyarrow.int64()),
+                                                                    ('sfd', pyarrow.string()), ('id', pyarrow.string()), ('binary_fp', pyarrow.string())])
+                                                    )

@@ -25,68 +25,68 @@ from __future__ import print_function
 import abc
 
 import six
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf  # noqa
 
 
 class BaseModel(six.with_metaclass(abc.ABCMeta, object)):
-  """Abstract class for models.
+    """Abstract class for models.
 
-  Implements default session checkpoint restore methods.
-  """
-
-  def __init__(self):
-    """Constructs a BaseModel."""
-    self._session = None
-
-  @abc.abstractmethod
-  def _build_graph_for_generation(self):
-    """Builds the model graph for generation.
-
-    Will be called before restoring a checkpoint file.
+    Implements default session checkpoint restore methods.
     """
-    pass
 
-  def initialize_with_checkpoint(self, checkpoint_file):
-    """Builds the TF graph given a checkpoint file.
+    def __init__(self):
+        """Constructs a BaseModel."""
+        self._session = None
 
-    Calls into _build_graph_for_generation, which must be implemented by the
-    subclass, before restoring the checkpoint.
+    @abc.abstractmethod
+    def _build_graph_for_generation(self):
+        """Builds the model graph for generation.
 
-    Args:
-      checkpoint_file: The path to the checkpoint file that should be used.
-    """
-    with tf.Graph().as_default():
-      self._build_graph_for_generation()
-      saver = tf.train.Saver()
-      self._session = tf.Session()
-      tf.logging.info('Checkpoint used: %s', checkpoint_file)
-      saver.restore(self._session, checkpoint_file)
+        Will be called before restoring a checkpoint file.
+        """
+        pass
 
-  def initialize_with_checkpoint_and_metagraph(self, checkpoint_filename,
-                                               metagraph_filename):
-    """Builds the TF graph with a checkpoint and metagraph.
+    def initialize_with_checkpoint(self, checkpoint_file):
+        """Builds the TF graph given a checkpoint file.
 
-    Args:
-      checkpoint_filename: The path to the checkpoint file that should be used.
-      metagraph_filename: The path to the metagraph file that should be used.
-    """
-    with tf.Graph().as_default():
-      self._session = tf.Session()
-      new_saver = tf.train.import_meta_graph(metagraph_filename)
-      new_saver.restore(self._session, checkpoint_filename)
+        Calls into _build_graph_for_generation, which must be implemented by the
+        subclass, before restoring the checkpoint.
 
-  def write_checkpoint_with_metagraph(self, checkpoint_filename):
-    """Writes the checkpoint and metagraph.
+        Args:
+          checkpoint_file: The path to the checkpoint file that should be used.
+        """
+        with tf.Graph().as_default():
+            self._build_graph_for_generation()
+            saver = tf.train.Saver()
+            self._session = tf.Session()
+            tf.logging.info('Checkpoint used: %s', checkpoint_file)
+            saver.restore(self._session, checkpoint_file)
 
-    Args:
-      checkpoint_filename: Path to the checkpoint file.
-    """
-    with self._session.graph.as_default():
-      saver = tf.train.Saver(sharded=False, write_version=tf.train.SaverDef.V1)
-      saver.save(self._session, checkpoint_filename, meta_graph_suffix='meta',
-                 write_meta_graph=True)
+    def initialize_with_checkpoint_and_metagraph(self, checkpoint_filename,
+                                                 metagraph_filename):
+        """Builds the TF graph with a checkpoint and metagraph.
 
-  def close(self):
-    """Closes the TF session."""
-    self._session.close()
-    self._session = None
+        Args:
+          checkpoint_filename: The path to the checkpoint file that should be used.
+          metagraph_filename: The path to the metagraph file that should be used.
+        """
+        with tf.Graph().as_default():
+            self._session = tf.Session()
+            new_saver = tf.train.import_meta_graph(metagraph_filename)
+            new_saver.restore(self._session, checkpoint_filename)
+
+    def write_checkpoint_with_metagraph(self, checkpoint_filename):
+        """Writes the checkpoint and metagraph.
+
+        Args:
+          checkpoint_filename: Path to the checkpoint file.
+        """
+        with self._session.graph.as_default():
+            saver = tf.train.Saver(sharded=False, write_version=tf.train.SaverDef.V1)
+            saver.save(self._session, checkpoint_filename, meta_graph_suffix='meta',
+                       write_meta_graph=True)
+
+    def close(self):
+        """Closes the TF session."""
+        self._session.close()
+        self._session = None

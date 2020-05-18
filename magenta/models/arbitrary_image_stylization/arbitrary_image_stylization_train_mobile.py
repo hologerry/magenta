@@ -23,8 +23,8 @@ import os
 from magenta.models.arbitrary_image_stylization import arbitrary_image_stylization_build_mobilenet_model as build_mobilenet_model
 from magenta.models.image_stylization import image_utils
 from magenta.models.image_stylization import vgg
-import tensorflow.compat.v1 as tf
-from tensorflow.contrib import slim as contrib_slim
+import tensorflow.compat.v1 as tf  # noqa
+from tensorflow.contrib import slim as contrib_slim  # noqa
 
 slim = contrib_slim
 
@@ -73,97 +73,97 @@ FLAGS = flags.FLAGS
 
 
 def main(unused_argv=None):
-  tf.logging.set_verbosity(tf.logging.INFO)
-  with tf.Graph().as_default():
-    # Forces all input processing onto CPU in order to reserve the GPU for the
-    # forward inference and back-propagation.
-    device = '/cpu:0' if not FLAGS.ps_tasks else '/job:worker/cpu:0'
-    with tf.device(
-        tf.train.replica_device_setter(FLAGS.ps_tasks, worker_device=device)):
-      # Loads content images.
-      content_inputs_, _ = image_utils.imagenet_inputs(FLAGS.batch_size,
-                                                       FLAGS.image_size)
+    tf.logging.set_verbosity(tf.logging.INFO)
+    with tf.Graph().as_default():
+        # Forces all input processing onto CPU in order to reserve the GPU for the
+        # forward inference and back-propagation.
+        device = '/cpu:0' if not FLAGS.ps_tasks else '/job:worker/cpu:0'
+        with tf.device(
+                tf.train.replica_device_setter(FLAGS.ps_tasks, worker_device=device)):
+            # Loads content images.
+            content_inputs_, _ = image_utils.imagenet_inputs(FLAGS.batch_size,
+                                                             FLAGS.image_size)
 
-      # Loads style images.
-      [style_inputs_, _, _] = image_utils.arbitrary_style_image_inputs(
-          FLAGS.style_dataset_file,
-          batch_size=FLAGS.batch_size,
-          image_size=FLAGS.image_size,
-          shuffle=True,
-          center_crop=FLAGS.center_crop,
-          augment_style_images=FLAGS.augment_style_images,
-          random_style_image_size=FLAGS.random_style_image_size)
+            # Loads style images.
+            [style_inputs_, _, _] = image_utils.arbitrary_style_image_inputs(
+                FLAGS.style_dataset_file,
+                batch_size=FLAGS.batch_size,
+                image_size=FLAGS.image_size,
+                shuffle=True,
+                center_crop=FLAGS.center_crop,
+                augment_style_images=FLAGS.augment_style_images,
+                random_style_image_size=FLAGS.random_style_image_size)
 
-    with tf.device(tf.train.replica_device_setter(FLAGS.ps_tasks)):
-      # Process style and content weight flags.
-      content_weights = ast.literal_eval(FLAGS.content_weights)
-      style_weights = ast.literal_eval(FLAGS.style_weights)
+        with tf.device(tf.train.replica_device_setter(FLAGS.ps_tasks)):
+            # Process style and content weight flags.
+            content_weights = ast.literal_eval(FLAGS.content_weights)
+            style_weights = ast.literal_eval(FLAGS.style_weights)
 
-      # Define the model
-      stylized_images, total_loss, loss_dict, \
-            _ = build_mobilenet_model.build_mobilenet_model(
-                content_inputs_,
-                style_inputs_,
-                mobilenet_trainable=False,
-                style_params_trainable=True,
-                transformer_trainable=True,
-                mobilenet_end_point='layer_19',
-                transformer_alpha=FLAGS.alpha,
-                style_prediction_bottleneck=100,
-                adds_losses=True,
-                content_weights=content_weights,
-                style_weights=style_weights,
-                total_variation_weight=FLAGS.total_variation_weight,
-            )
+            # Define the model
+            stylized_images, total_loss, loss_dict, \
+                _ = build_mobilenet_model.build_mobilenet_model(
+                    content_inputs_,
+                    style_inputs_,
+                    mobilenet_trainable=False,
+                    style_params_trainable=True,
+                    transformer_trainable=True,
+                    mobilenet_end_point='layer_19',
+                    transformer_alpha=FLAGS.alpha,
+                    style_prediction_bottleneck=100,
+                    adds_losses=True,
+                    content_weights=content_weights,
+                    style_weights=style_weights,
+                    total_variation_weight=FLAGS.total_variation_weight,
+                )
 
-      # Adding scalar summaries to the tensorboard.
-      for key in loss_dict:
-        tf.summary.scalar(key, loss_dict[key])
+            # Adding scalar summaries to the tensorboard.
+            for key in loss_dict:
+                tf.summary.scalar(key, loss_dict[key])
 
-      # Adding Image summaries to the tensorboard.
-      tf.summary.image('image/0_content_inputs', content_inputs_, 3)
-      tf.summary.image('image/1_style_inputs_aug', style_inputs_, 3)
-      tf.summary.image('image/2_stylized_images', stylized_images, 3)
+            # Adding Image summaries to the tensorboard.
+            tf.summary.image('image/0_content_inputs', content_inputs_, 3)
+            tf.summary.image('image/1_style_inputs_aug', style_inputs_, 3)
+            tf.summary.image('image/2_stylized_images', stylized_images, 3)
 
-      # Set up training
-      optimizer = tf.train.AdamOptimizer(FLAGS.learning_rate)
-      train_op = slim.learning.create_train_op(
-          total_loss,
-          optimizer,
-          clip_gradient_norm=FLAGS.clip_gradient_norm,
-          summarize_gradients=False)
+            # Set up training
+            optimizer = tf.train.AdamOptimizer(FLAGS.learning_rate)
+            train_op = slim.learning.create_train_op(
+                total_loss,
+                optimizer,
+                clip_gradient_norm=FLAGS.clip_gradient_norm,
+                summarize_gradients=False)
 
-      # Function to restore VGG16 parameters.
-      init_fn_vgg = slim.assign_from_checkpoint_fn(vgg.checkpoint_file(),
-                                                   slim.get_variables('vgg_16'))
+            # Function to restore VGG16 parameters.
+            init_fn_vgg = slim.assign_from_checkpoint_fn(vgg.checkpoint_file(),
+                                                         slim.get_variables('vgg_16'))
 
-      # Function to restore Mobilenet V2 parameters.
-      mobilenet_variables_dict = {
-          var.op.name: var for var in slim.get_model_variables('MobilenetV2')
-      }
-      init_fn_mobilenet = slim.assign_from_checkpoint_fn(
-          FLAGS.mobilenet_checkpoint, mobilenet_variables_dict)
+            # Function to restore Mobilenet V2 parameters.
+            mobilenet_variables_dict = {
+                var.op.name: var for var in slim.get_model_variables('MobilenetV2')
+            }
+            init_fn_mobilenet = slim.assign_from_checkpoint_fn(
+                FLAGS.mobilenet_checkpoint, mobilenet_variables_dict)
 
-      # Function to restore VGG16 and Mobilenet V2 parameters.
-      def init_sub_networks(session):
-        init_fn_vgg(session)
-        init_fn_mobilenet(session)
+            # Function to restore VGG16 and Mobilenet V2 parameters.
+            def init_sub_networks(session):
+                init_fn_vgg(session)
+                init_fn_mobilenet(session)
 
-      # Run training
-      slim.learning.train(
-          train_op=train_op,
-          logdir=os.path.expanduser(FLAGS.train_dir),
-          master=FLAGS.master,
-          is_chief=FLAGS.task == 0,
-          number_of_steps=FLAGS.train_steps,
-          init_fn=init_sub_networks,
-          save_summaries_secs=FLAGS.save_summaries_secs,
-          save_interval_secs=FLAGS.save_interval_secs)
+            # Run training
+            slim.learning.train(
+                train_op=train_op,
+                logdir=os.path.expanduser(FLAGS.train_dir),
+                master=FLAGS.master,
+                is_chief=FLAGS.task == 0,
+                number_of_steps=FLAGS.train_steps,
+                init_fn=init_sub_networks,
+                save_summaries_secs=FLAGS.save_summaries_secs,
+                save_interval_secs=FLAGS.save_interval_secs)
 
 
 def console_entry_point():
-  tf.app.run(main)
+    tf.app.run(main)
 
 
 if __name__ == '__main__':
-  console_entry_point()
+    console_entry_point()

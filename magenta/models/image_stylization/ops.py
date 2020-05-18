@@ -18,10 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow.compat.v1 as tf
-from tensorflow.contrib import slim as contrib_slim
-from tensorflow.python.framework import ops as framework_ops
-from tensorflow.python.ops import variable_scope
+import tensorflow.compat.v1 as tf  # noqa
+from tensorflow.contrib import slim as contrib_slim  # noqa
+from tensorflow.python.framework import ops as framework_ops  # noqa
+from tensorflow.python.ops import variable_scope  # noqa
 
 slim = contrib_slim
 
@@ -38,90 +38,90 @@ def conditional_instance_norm(inputs,
                               outputs_collections=None,
                               trainable=True,
                               scope=None):
-  """Conditional instance normalization from TODO(vdumoulin): add link.
+    """Conditional instance normalization from TODO(vdumoulin): add link.
 
-    "A Learned Representation for Artistic Style"
+      "A Learned Representation for Artistic Style"
 
-    Vincent Dumoulin, Jon Shlens, Manjunath Kudlur
+      Vincent Dumoulin, Jon Shlens, Manjunath Kudlur
 
-  Can be used as a normalizer function for conv2d.
+    Can be used as a normalizer function for conv2d.
 
-  Args:
-    inputs: a tensor with 4 dimensions. The normalization occurs over height
-        and width.
-    labels: tensor, style labels to condition on.
-    num_categories: int, total number of styles being modeled.
-    center: If True, subtract `beta`. If False, `beta` is ignored.
-    scale: If True, multiply by `gamma`. If False, `gamma` is
-      not used. When the next layer is linear (also e.g. `nn.relu`), this can be
-      disabled since the scaling can be done by the next layer.
-    activation_fn: Optional activation function.
-    reuse: whether or not the layer and its variables should be reused. To be
-      able to reuse the layer scope must be given.
-    variables_collections: optional collections for the variables.
-    outputs_collections: collections to add the outputs.
-    trainable: If `True` also add variables to the graph collection
-      `GraphKeys.TRAINABLE_VARIABLES` (see tf.Variable).
-    scope: Optional scope for `variable_scope`.
+    Args:
+      inputs: a tensor with 4 dimensions. The normalization occurs over height
+          and width.
+      labels: tensor, style labels to condition on.
+      num_categories: int, total number of styles being modeled.
+      center: If True, subtract `beta`. If False, `beta` is ignored.
+      scale: If True, multiply by `gamma`. If False, `gamma` is
+        not used. When the next layer is linear (also e.g. `nn.relu`), this can be
+        disabled since the scaling can be done by the next layer.
+      activation_fn: Optional activation function.
+      reuse: whether or not the layer and its variables should be reused. To be
+        able to reuse the layer scope must be given.
+      variables_collections: optional collections for the variables.
+      outputs_collections: collections to add the outputs.
+      trainable: If `True` also add variables to the graph collection
+        `GraphKeys.TRAINABLE_VARIABLES` (see tf.Variable).
+      scope: Optional scope for `variable_scope`.
 
-  Returns:
-    A `Tensor` representing the output of the operation.
+    Returns:
+      A `Tensor` representing the output of the operation.
 
-  Raises:
-    ValueError: if rank or last dimension of `inputs` is undefined, or if the
-        input doesn't have 4 dimensions.
-  """
-  with tf.variable_scope(scope, 'InstanceNorm', [inputs],
-                         reuse=reuse) as sc:
-    inputs = tf.convert_to_tensor(inputs)
-    inputs_shape = inputs.get_shape()
-    inputs_rank = inputs_shape.ndims
-    if inputs_rank is None:
-      raise ValueError('Inputs %s has undefined rank.' % inputs.name)
-    if inputs_rank != 4:
-      raise ValueError('Inputs %s is not a 4D tensor.' % inputs.name)
-    dtype = inputs.dtype.base_dtype
-    axis = [1, 2]
-    params_shape = inputs_shape[-1:]
-    if not params_shape.is_fully_defined():
-      raise ValueError('Inputs %s has undefined last dimension %s.' % (
-          inputs.name, params_shape))
+    Raises:
+      ValueError: if rank or last dimension of `inputs` is undefined, or if the
+          input doesn't have 4 dimensions.
+    """
+    with tf.variable_scope(scope, 'InstanceNorm', [inputs],
+                           reuse=reuse) as sc:
+        inputs = tf.convert_to_tensor(inputs)
+        inputs_shape = inputs.get_shape()
+        inputs_rank = inputs_shape.ndims
+        if inputs_rank is None:
+            raise ValueError('Inputs %s has undefined rank.' % inputs.name)
+        if inputs_rank != 4:
+            raise ValueError('Inputs %s is not a 4D tensor.' % inputs.name)
+        dtype = inputs.dtype.base_dtype
+        axis = [1, 2]
+        params_shape = inputs_shape[-1:]
+        if not params_shape.is_fully_defined():
+            raise ValueError('Inputs %s has undefined last dimension %s.' % (
+                inputs.name, params_shape))
 
-    def _label_conditioned_variable(name, initializer, labels, num_categories):
-      """Label conditioning."""
-      shape = tf.TensorShape([num_categories]).concatenate(params_shape)
-      var_collections = slim.utils.get_variable_collections(
-          variables_collections, name)
-      var = slim.model_variable(name,
-                                shape=shape,
-                                dtype=dtype,
-                                initializer=initializer,
-                                collections=var_collections,
-                                trainable=trainable)
-      conditioned_var = tf.gather(var, labels)
-      conditioned_var = tf.expand_dims(tf.expand_dims(conditioned_var, 1), 1)
-      return conditioned_var
+        def _label_conditioned_variable(name, initializer, labels, num_categories):
+            """Label conditioning."""
+            shape = tf.TensorShape([num_categories]).concatenate(params_shape)
+            var_collections = slim.utils.get_variable_collections(
+                variables_collections, name)
+            var = slim.model_variable(name,
+                                      shape=shape,
+                                      dtype=dtype,
+                                      initializer=initializer,
+                                      collections=var_collections,
+                                      trainable=trainable)
+            conditioned_var = tf.gather(var, labels)
+            conditioned_var = tf.expand_dims(tf.expand_dims(conditioned_var, 1), 1)
+            return conditioned_var
 
-    # Allocate parameters for the beta and gamma of the normalization.
-    beta, gamma = None, None
-    if center:
-      beta = _label_conditioned_variable(
-          'beta', tf.zeros_initializer(), labels, num_categories)
-    if scale:
-      gamma = _label_conditioned_variable(
-          'gamma', tf.ones_initializer(), labels, num_categories)
-    # Calculate the moments on the last axis (instance activations).
-    mean, variance = tf.nn.moments(inputs, axis, keep_dims=True)
-    # Compute layer normalization using the batch_normalization function.
-    variance_epsilon = 1E-5
-    outputs = tf.nn.batch_normalization(
-        inputs, mean, variance, beta, gamma, variance_epsilon)
-    outputs.set_shape(inputs_shape)
-    if activation_fn:
-      outputs = activation_fn(outputs)
-    return slim.utils.collect_named_outputs(outputs_collections,
-                                            sc.original_name_scope,
-                                            outputs)
+        # Allocate parameters for the beta and gamma of the normalization.
+        beta, gamma = None, None
+        if center:
+            beta = _label_conditioned_variable(
+                'beta', tf.zeros_initializer(), labels, num_categories)
+        if scale:
+            gamma = _label_conditioned_variable(
+                'gamma', tf.ones_initializer(), labels, num_categories)
+        # Calculate the moments on the last axis (instance activations).
+        mean, variance = tf.nn.moments(inputs, axis, keep_dims=True)
+        # Compute layer normalization using the batch_normalization function.
+        variance_epsilon = 1E-5
+        outputs = tf.nn.batch_normalization(
+            inputs, mean, variance, beta, gamma, variance_epsilon)
+        outputs.set_shape(inputs_shape)
+        if activation_fn:
+            outputs = activation_fn(outputs)
+        return slim.utils.collect_named_outputs(outputs_collections,
+                                                sc.original_name_scope,
+                                                outputs)
 
 
 @slim.add_arg_scope
@@ -136,90 +136,90 @@ def weighted_instance_norm(inputs,
                            outputs_collections=None,
                            trainable=True,
                            scope=None):
-  """Weighted instance normalization.
+    """Weighted instance normalization.
 
-  Can be used as a normalizer function for conv2d.
+    Can be used as a normalizer function for conv2d.
 
-  Args:
-    inputs: a tensor with 4 dimensions. The normalization occurs over height
-        and width.
-    weights: 1D tensor.
-    num_categories: int, total number of styles being modeled.
-    center: If True, subtract `beta`. If False, `beta` is ignored.
-    scale: If True, multiply by `gamma`. If False, `gamma` is
-      not used. When the next layer is linear (also e.g. `nn.relu`), this can be
-      disabled since the scaling can be done by the next layer.
-    activation_fn: Optional activation function.
-    reuse: whether or not the layer and its variables should be reused. To be
-      able to reuse the layer scope must be given.
-    variables_collections: optional collections for the variables.
-    outputs_collections: collections to add the outputs.
-    trainable: If `True` also add variables to the graph collection
-      `GraphKeys.TRAINABLE_VARIABLES` (see tf.Variable).
-    scope: Optional scope for `variable_scope`.
+    Args:
+      inputs: a tensor with 4 dimensions. The normalization occurs over height
+          and width.
+      weights: 1D tensor.
+      num_categories: int, total number of styles being modeled.
+      center: If True, subtract `beta`. If False, `beta` is ignored.
+      scale: If True, multiply by `gamma`. If False, `gamma` is
+        not used. When the next layer is linear (also e.g. `nn.relu`), this can be
+        disabled since the scaling can be done by the next layer.
+      activation_fn: Optional activation function.
+      reuse: whether or not the layer and its variables should be reused. To be
+        able to reuse the layer scope must be given.
+      variables_collections: optional collections for the variables.
+      outputs_collections: collections to add the outputs.
+      trainable: If `True` also add variables to the graph collection
+        `GraphKeys.TRAINABLE_VARIABLES` (see tf.Variable).
+      scope: Optional scope for `variable_scope`.
 
-  Returns:
-    A `Tensor` representing the output of the operation.
+    Returns:
+      A `Tensor` representing the output of the operation.
 
-  Raises:
-    ValueError: if rank or last dimension of `inputs` is undefined, or if the
-        input doesn't have 4 dimensions.
-  """
-  with tf.variable_scope(scope, 'InstanceNorm', [inputs],
-                         reuse=reuse) as sc:
-    inputs = tf.convert_to_tensor(inputs)
-    inputs_shape = inputs.get_shape()
-    inputs_rank = inputs_shape.ndims
-    if inputs_rank is None:
-      raise ValueError('Inputs %s has undefined rank.' % inputs.name)
-    if inputs_rank != 4:
-      raise ValueError('Inputs %s is not a 4D tensor.' % inputs.name)
-    dtype = inputs.dtype.base_dtype
-    axis = [1, 2]
-    params_shape = inputs_shape[-1:]
-    if not params_shape.is_fully_defined():
-      raise ValueError('Inputs %s has undefined last dimension %s.' % (
-          inputs.name, params_shape))
+    Raises:
+      ValueError: if rank or last dimension of `inputs` is undefined, or if the
+          input doesn't have 4 dimensions.
+    """
+    with tf.variable_scope(scope, 'InstanceNorm', [inputs],
+                           reuse=reuse) as sc:
+        inputs = tf.convert_to_tensor(inputs)
+        inputs_shape = inputs.get_shape()
+        inputs_rank = inputs_shape.ndims
+        if inputs_rank is None:
+            raise ValueError('Inputs %s has undefined rank.' % inputs.name)
+        if inputs_rank != 4:
+            raise ValueError('Inputs %s is not a 4D tensor.' % inputs.name)
+        dtype = inputs.dtype.base_dtype
+        axis = [1, 2]
+        params_shape = inputs_shape[-1:]
+        if not params_shape.is_fully_defined():
+            raise ValueError('Inputs %s has undefined last dimension %s.' % (
+                inputs.name, params_shape))
 
-    def _weighted_variable(name, initializer, weights, num_categories):
-      """Weighting."""
-      shape = tf.TensorShape([num_categories]).concatenate(params_shape)
-      var_collections = slim.utils.get_variable_collections(
-          variables_collections, name)
-      var = slim.model_variable(name,
-                                shape=shape,
-                                dtype=dtype,
-                                initializer=initializer,
-                                collections=var_collections,
-                                trainable=trainable)
-      weights = tf.reshape(
-          weights,
-          weights.get_shape().concatenate([1] * params_shape.ndims))
-      conditioned_var = weights * var
-      conditioned_var = tf.reduce_sum(conditioned_var, 0, keep_dims=True)
-      conditioned_var = tf.expand_dims(tf.expand_dims(conditioned_var, 1), 1)
-      return conditioned_var
+        def _weighted_variable(name, initializer, weights, num_categories):
+            """Weighting."""
+            shape = tf.TensorShape([num_categories]).concatenate(params_shape)
+            var_collections = slim.utils.get_variable_collections(
+                variables_collections, name)
+            var = slim.model_variable(name,
+                                      shape=shape,
+                                      dtype=dtype,
+                                      initializer=initializer,
+                                      collections=var_collections,
+                                      trainable=trainable)
+            weights = tf.reshape(
+                weights,
+                weights.get_shape().concatenate([1] * params_shape.ndims))
+            conditioned_var = weights * var
+            conditioned_var = tf.reduce_sum(conditioned_var, 0, keep_dims=True)
+            conditioned_var = tf.expand_dims(tf.expand_dims(conditioned_var, 1), 1)
+            return conditioned_var
 
-    # Allocate parameters for the beta and gamma of the normalization.
-    beta, gamma = None, None
-    if center:
-      beta = _weighted_variable(
-          'beta', tf.zeros_initializer(), weights, num_categories)
-    if scale:
-      gamma = _weighted_variable(
-          'gamma', tf.ones_initializer(), weights, num_categories)
-    # Calculate the moments on the last axis (instance activations).
-    mean, variance = tf.nn.moments(inputs, axis, keep_dims=True)
-    # Compute layer normalization using the batch_normalization function.
-    variance_epsilon = 1E-5
-    outputs = tf.nn.batch_normalization(
-        inputs, mean, variance, beta, gamma, variance_epsilon)
-    outputs.set_shape(inputs_shape)
-    if activation_fn:
-      outputs = activation_fn(outputs)
-    return slim.utils.collect_named_outputs(outputs_collections,
-                                            sc.original_name_scope,
-                                            outputs)
+        # Allocate parameters for the beta and gamma of the normalization.
+        beta, gamma = None, None
+        if center:
+            beta = _weighted_variable(
+                'beta', tf.zeros_initializer(), weights, num_categories)
+        if scale:
+            gamma = _weighted_variable(
+                'gamma', tf.ones_initializer(), weights, num_categories)
+        # Calculate the moments on the last axis (instance activations).
+        mean, variance = tf.nn.moments(inputs, axis, keep_dims=True)
+        # Compute layer normalization using the batch_normalization function.
+        variance_epsilon = 1E-5
+        outputs = tf.nn.batch_normalization(
+            inputs, mean, variance, beta, gamma, variance_epsilon)
+        outputs.set_shape(inputs_shape)
+        if activation_fn:
+            outputs = activation_fn(outputs)
+        return slim.utils.collect_named_outputs(outputs_collections,
+                                                sc.original_name_scope,
+                                                outputs)
 
 
 @slim.add_arg_scope
@@ -230,76 +230,76 @@ def conditional_style_norm(inputs,
                            outputs_collections=None,
                            check_numerics=True,
                            scope=None):
-  """Conditional style normalization.
+    """Conditional style normalization.
 
-  Can be used as a normalizer function for conv2d. This method is similar
-  to conditional_instance_norm. But instead of creating the normalization
-  variables (beta and gamma), it gets these values as inputs in
-  style_params dictionary.
+    Can be used as a normalizer function for conv2d. This method is similar
+    to conditional_instance_norm. But instead of creating the normalization
+    variables (beta and gamma), it gets these values as inputs in
+    style_params dictionary.
 
-  Args:
-    inputs: a tensor with 4 dimensions. The normalization occurs over height
-        and width.
-    style_params: a dict from the scope names of the variables of this
-         method + beta/gamma to the beta and gamma tensors.
-        eg. {'transformer/expand/conv2/conv/StyleNorm/beta': <tf.Tensor>,
-        'transformer/expand/conv2/conv/StyleNorm/gamma': <tf.Tensor>,
-        'transformer/residual/residual1/conv1/StyleNorm/beta': <tf.Tensor>,
-        'transformer/residual/residual1/conv1/StyleNorm/gamma': <tf.Tensor>}
-    activation_fn: optional activation function.
-    reuse: whether or not the layer and its variables should be reused. To be
-      able to reuse the layer scope must be given.
-    outputs_collections: collections to add the outputs.
-    check_numerics: whether to checks for NAN values in beta and gamma.
-    scope: optional scope for `variable_op_scope`.
+    Args:
+      inputs: a tensor with 4 dimensions. The normalization occurs over height
+          and width.
+      style_params: a dict from the scope names of the variables of this
+           method + beta/gamma to the beta and gamma tensors.
+          eg. {'transformer/expand/conv2/conv/StyleNorm/beta': <tf.Tensor>,
+          'transformer/expand/conv2/conv/StyleNorm/gamma': <tf.Tensor>,
+          'transformer/residual/residual1/conv1/StyleNorm/beta': <tf.Tensor>,
+          'transformer/residual/residual1/conv1/StyleNorm/gamma': <tf.Tensor>}
+      activation_fn: optional activation function.
+      reuse: whether or not the layer and its variables should be reused. To be
+        able to reuse the layer scope must be given.
+      outputs_collections: collections to add the outputs.
+      check_numerics: whether to checks for NAN values in beta and gamma.
+      scope: optional scope for `variable_op_scope`.
 
-  Returns:
-    A `Tensor` representing the output of the operation.
+    Returns:
+      A `Tensor` representing the output of the operation.
 
-  Raises:
-    ValueError: if rank or last dimension of `inputs` is undefined, or if the
-        input doesn't have 4 dimensions.
-  """
-  with variable_scope.variable_scope(
-      scope, 'StyleNorm', [inputs], reuse=reuse) as sc:
-    inputs = framework_ops.convert_to_tensor(inputs)
-    inputs_shape = inputs.get_shape()
-    inputs_rank = inputs_shape.ndims
-    if inputs_rank is None:
-      raise ValueError('Inputs %s has undefined rank.' % inputs.name)
-    if inputs_rank != 4:
-      raise ValueError('Inputs %s is not a 4D tensor.' % inputs.name)
-    axis = [1, 2]
-    params_shape = inputs_shape[-1:]
-    if not params_shape.is_fully_defined():
-      raise ValueError('Inputs %s has undefined last dimension %s.' %
-                       (inputs.name, params_shape))
+    Raises:
+      ValueError: if rank or last dimension of `inputs` is undefined, or if the
+          input doesn't have 4 dimensions.
+    """
+    with variable_scope.variable_scope(
+            scope, 'StyleNorm', [inputs], reuse=reuse) as sc:
+        inputs = framework_ops.convert_to_tensor(inputs)
+        inputs_shape = inputs.get_shape()
+        inputs_rank = inputs_shape.ndims
+        if inputs_rank is None:
+            raise ValueError('Inputs %s has undefined rank.' % inputs.name)
+        if inputs_rank != 4:
+            raise ValueError('Inputs %s is not a 4D tensor.' % inputs.name)
+        axis = [1, 2]
+        params_shape = inputs_shape[-1:]
+        if not params_shape.is_fully_defined():
+            raise ValueError('Inputs %s has undefined last dimension %s.' %
+                             (inputs.name, params_shape))
 
-    def _style_parameters(name):
-      """Gets style normalization parameters."""
-      var = style_params[('{}/{}'.format(sc.name, name))]
+        def _style_parameters(name):
+            """Gets style normalization parameters."""
+            var = style_params[('{}/{}'.format(sc.name, name))]
 
-      if check_numerics:
-        var = tf.check_numerics(var, 'NaN/Inf in {}'.format(var.name))
-      if var.get_shape().ndims < 2:
-        var = tf.expand_dims(var, 0)
-      var = tf.expand_dims(tf.expand_dims(var, 1), 1)
+            if check_numerics:
+                var = tf.check_numerics(var, 'NaN/Inf in {}'.format(var.name))
+            if var.get_shape().ndims < 2:
+                var = tf.expand_dims(var, 0)
+            var = tf.expand_dims(tf.expand_dims(var, 1), 1)
 
-      return var
+            return var
 
-    # Allocates parameters for the beta and gamma of the normalization.
-    beta = _style_parameters('beta')
-    gamma = _style_parameters('gamma')
+        # Allocates parameters for the beta and gamma of the normalization.
+        beta = _style_parameters('beta')
+        gamma = _style_parameters('gamma')
 
-    # Calculates the moments on the last axis (instance activations).
-    mean, variance = tf.nn.moments(inputs, axis, keep_dims=True)
+        # Calculates the moments on the last axis (instance activations).
+        mean, variance = tf.nn.moments(inputs, axis, keep_dims=True)
 
-    # Compute layer normalization using the batch_normalization function.
-    variance_epsilon = 1E-5
-    outputs = tf.nn.batch_normalization(inputs, mean, variance, beta, gamma,
-                                        variance_epsilon)
-    outputs.set_shape(inputs_shape)
-    if activation_fn:
-      outputs = activation_fn(outputs)
-    return slim.utils.collect_named_outputs(outputs_collections,
-                                            sc.original_name_scope, outputs)
+        # Compute layer normalization using the batch_normalization function.
+        variance_epsilon = 1E-5
+        outputs = tf.nn.batch_normalization(inputs, mean, variance, beta, gamma,
+                                            variance_epsilon)
+        outputs.set_shape(inputs_shape)
+        if activation_fn:
+            outputs = activation_fn(outputs)
+        return slim.utils.collect_named_outputs(outputs_collections,
+                                                sc.original_name_scope, outputs)

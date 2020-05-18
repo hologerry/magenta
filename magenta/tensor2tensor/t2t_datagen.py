@@ -20,20 +20,20 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from magenta.tensor2tensor import models  # pylint: disable=unused-import
-from magenta.tensor2tensor import problems  # pylint: disable=unused-import
+from magenta.tensor2tensor import models  # noqa
+from magenta.tensor2tensor import problems  # noqa
 from tensor2tensor.bin import t2t_datagen
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf  # noqa
 
 
 def main(argv):
-  t2t_datagen.main(argv)
+    t2t_datagen.main(argv)
 
 
 def console_entry_point():
-  tf.logging.set_verbosity(tf.logging.INFO)
-  tf.app.run(main)
+    tf.logging.set_verbosity(tf.logging.INFO)
+    tf.app.run(main)
 
 
 if __name__ == '__main__':
-  console_entry_point()
+    console_entry_point()

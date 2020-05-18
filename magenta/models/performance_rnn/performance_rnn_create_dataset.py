@@ -25,7 +25,7 @@ import os
 from magenta.models.performance_rnn import performance_model
 from magenta.pipelines import performance_pipeline
 from magenta.pipelines import pipeline
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf  # noqa
 
 flags = tf.app.flags
 FLAGS = tf.app.flags.FLAGS
@@ -48,25 +48,25 @@ flags.DEFINE_string(
 
 
 def main(unused_argv):
-  tf.logging.set_verbosity(FLAGS.log)
+    tf.logging.set_verbosity(FLAGS.log)
 
-  pipeline_instance = performance_pipeline.get_pipeline(
-      min_events=32,
-      max_events=512,
-      eval_ratio=FLAGS.eval_ratio,
-      config=performance_model.default_configs[FLAGS.config])
+    pipeline_instance = performance_pipeline.get_pipeline(
+        min_events=32,
+        max_events=512,
+        eval_ratio=FLAGS.eval_ratio,
+        config=performance_model.default_configs[FLAGS.config])
 
-  input_dir = os.path.expanduser(FLAGS.input)
-  output_dir = os.path.expanduser(FLAGS.output_dir)
-  pipeline.run_pipeline_serial(
-      pipeline_instance,
-      pipeline.tf_record_iterator(input_dir, pipeline_instance.input_type),
-      output_dir)
+    input_dir = os.path.expanduser(FLAGS.input)
+    output_dir = os.path.expanduser(FLAGS.output_dir)
+    pipeline.run_pipeline_serial(
+        pipeline_instance,
+        pipeline.tf_record_iterator(input_dir, pipeline_instance.input_type),
+        output_dir)
 
 
 def console_entry_point():
-  tf.app.run(main)
+    tf.app.run(main)
 
 
 if __name__ == '__main__':
-  console_entry_point()
+    console_entry_point()

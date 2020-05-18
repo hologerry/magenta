@@ -2,8 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import fontforge  # need python2, apt install python-fontforge
+import fontforge  # noqa
 import os
+
+# need python2, apt install python-fontforge
 
 
 alphabet_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'

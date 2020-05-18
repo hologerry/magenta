@@ -15,7 +15,7 @@
 """Imports Magenta problems so that they register with Tensor2Tensor."""
 
 # pylint: disable=unused-import
-from magenta.models import svg_vae
-from magenta.models.score2perf import score2perf
+from magenta.models import svg_vae  # noqa
+from magenta.models.score2perf import score2perf  # noqa
 
 # pylint: enable=unused-import

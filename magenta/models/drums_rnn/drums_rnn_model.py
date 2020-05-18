@@ -22,46 +22,46 @@ from __future__ import print_function
 import magenta
 from magenta.models.shared import events_rnn_model
 import magenta.music as mm
-from tensorflow.contrib import training as contrib_training
+from tensorflow.contrib import training as contrib_training  # noqa
 
 
 class DrumsRnnModel(events_rnn_model.EventSequenceRnnModel):
-  """Class for RNN drum track generation models."""
+    """Class for RNN drum track generation models."""
 
-  def generate_drum_track(self, num_steps, primer_drums, temperature=1.0,
-                          beam_size=1, branch_factor=1, steps_per_iteration=1):
-    """Generate a drum track from a primer drum track.
+    def generate_drum_track(self, num_steps, primer_drums, temperature=1.0,
+                            beam_size=1, branch_factor=1, steps_per_iteration=1):
+        """Generate a drum track from a primer drum track.
 
-    Args:
-      num_steps: The integer length in steps of the final drum track, after
-          generation. Includes the primer.
-      primer_drums: The primer drum track, a DrumTrack object.
-      temperature: A float specifying how much to divide the logits by
-         before computing the softmax. Greater than 1.0 makes drum tracks more
-         random, less than 1.0 makes drum tracks less random.
-      beam_size: An integer, beam size to use when generating drum tracks via
-          beam search.
-      branch_factor: An integer, beam search branch factor to use.
-      steps_per_iteration: An integer, number of steps to take per beam search
-          iteration.
+        Args:
+          num_steps: The integer length in steps of the final drum track, after
+              generation. Includes the primer.
+          primer_drums: The primer drum track, a DrumTrack object.
+          temperature: A float specifying how much to divide the logits by
+             before computing the softmax. Greater than 1.0 makes drum tracks more
+             random, less than 1.0 makes drum tracks less random.
+          beam_size: An integer, beam size to use when generating drum tracks via
+              beam search.
+          branch_factor: An integer, beam search branch factor to use.
+          steps_per_iteration: An integer, number of steps to take per beam search
+              iteration.
 
-    Returns:
-      The generated DrumTrack object (which begins with the provided primer drum
-          track).
-    """
-    return self._generate_events(num_steps, primer_drums, temperature,
-                                 beam_size, branch_factor, steps_per_iteration)
+        Returns:
+          The generated DrumTrack object (which begins with the provided primer drum
+              track).
+        """
+        return self._generate_events(num_steps, primer_drums, temperature,
+                                     beam_size, branch_factor, steps_per_iteration)
 
-  def drum_track_log_likelihood(self, drums):
-    """Evaluate the log likelihood of a drum track under the model.
+    def drum_track_log_likelihood(self, drums):
+        """Evaluate the log likelihood of a drum track under the model.
 
-    Args:
-      drums: The DrumTrack object for which to evaluate the log likelihood.
+        Args:
+          drums: The DrumTrack object for which to evaluate the log likelihood.
 
-    Returns:
-      The log likelihood of `drums` under this model.
-    """
-    return self._evaluate_log_likelihood([drums])[0]
+        Returns:
+          The log likelihood of `drums` under this model.
+        """
+        return self._evaluate_log_likelihood([drums])[0]
 
 
 # Default configurations.

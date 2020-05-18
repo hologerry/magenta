@@ -53,20 +53,20 @@ _GOLD = [
 
 
 def gold_longest():
-  """Returns the length of the longest gold standard sequence."""
-  return max([len(x[0].split(",")) for x in _GOLD])
+    """Returns the length of the longest gold standard sequence."""
+    return max([len(x[0].split(",")) for x in _GOLD])
 
 
 def gold_iterator(transpose_range=(0, 1)):
-  """Iterates through pairs of MIDI notes and buttons."""
-  maxlen = gold_longest()
-  for transpose in range(*transpose_range):
-    for midi_notes, buttons in _GOLD:
-      midi_notes = [int(x) + transpose for x in midi_notes.split(",")]
-      buttons = [int(x) for x in list(buttons)]
-      seqlen = len(midi_notes)
-      assert len(buttons) == len(midi_notes)
-      assert seqlen <= maxlen
-      midi_notes += [21] * (maxlen - seqlen)
-      buttons += [0] * (maxlen - seqlen)
-      yield [midi_notes], [buttons], seqlen
+    """Iterates through pairs of MIDI notes and buttons."""
+    maxlen = gold_longest()
+    for transpose in range(*transpose_range):
+        for midi_notes, buttons in _GOLD:
+            midi_notes = [int(x) + transpose for x in midi_notes.split(",")]
+            buttons = [int(x) for x in list(buttons)]
+            seqlen = len(midi_notes)
+            assert len(buttons) == len(midi_notes)
+            assert seqlen <= maxlen
+            midi_notes += [21] * (maxlen - seqlen)
+            buttons += [0] * (maxlen - seqlen)
+            yield [midi_notes], [buttons], seqlen
