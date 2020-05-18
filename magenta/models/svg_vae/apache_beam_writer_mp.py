@@ -15,7 +15,7 @@ import pickle
 'binary_fp': binary/str}  # font identifier (provided in glyphazzn_urls.txt)
 '''
 glyph_list_path = 'svg_vae_data/glyph_list_train.pkl'
-target_beam_parquetio_file_prefix = 'svg_vae_data/glyphs-parquetio/glyphs-parquetio'
+target_beam_parquetio_file_prefix = 'svg_vae_data/glyphs-parquetio-mp/glyphs-parquetio'
 glyph_list = []
 fontdirs = []
 
@@ -66,5 +66,6 @@ with beam.Pipeline() as p:
         pyarrow.schema(
             [('uni', pyarrow.int64()), ('width', pyarrow.int64()), ('vwidth', pyarrow.int64()),
              ('sfd', pyarrow.string()), ('id', pyarrow.string()), ('binary_fp', pyarrow.string())]
-        )
+        ),
+        num_shards=512
     )
