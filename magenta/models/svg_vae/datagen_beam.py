@@ -29,13 +29,13 @@ flags.DEFINE_string(
     'pipeline_options', '',
     'Command line flags to use in constructing the Beam pipeline options.')
 flags.DEFINE_string(
-    'raw_data_file', '/path/to/parquetio-file',
+    'raw_data_file', 'svg_vae_data/glyphs-parquetio/glyphs-parquetio',
     'File where the raw data is (in parquetio format).')
 flags.DEFINE_string(
-    'final_data_file', '/path/to/final-dataset-train',
+    'final_data_file', 'svg_vae_data/final-dataset/final-dataset-train',
     'File where the final data will be saved (in tfrecord format).')
 flags.DEFINE_string(
-    'final_stats_file', '/path/to/final-dataset-stats',
+    'final_stats_file', 'svg_vae_data/final-dataset/final-dataset-stats',
     'File where the final data stats will be saved (in tfrecord format).')
 
 # pylint: disable=expression-not-assigned
