@@ -223,7 +223,7 @@ def get_stats_of_glyphazzn(filepattern, output_path):
         examples = examples | 'MeanStdevToSerializedTFRecord' >> beam.Map(
             _mean_to_example)
         (examples | 'WriteToTFRecord' >> beam.io.tfrecordio.WriteToTFRecord(
-            output_path, coder=beam.coders.ProtoCode(tf.train.Example)))
+            output_path, coder=beam.coders.coders.ProtoCoder(tf.train.Example)))
     return pipeline
 
 
