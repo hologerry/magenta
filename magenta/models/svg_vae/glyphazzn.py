@@ -31,9 +31,9 @@ import tensorflow.compat.v1 as tf  # noqa
 
 # Raw dataset paths (from datagen_beam.py)
 # (Run t2t datagen on GlyphAzznProblem to convert these into a t2t dataset)
-RAW_STAT_FILE = '/path/to/glyphazzn-internal-stats-00000-of-00001'
-RAW_DATA_FILES = '/path/to/glyphazzn-internal-train*'
-URL_SPLITS = 'third_party/py/magenta/models/svg_vae/glyphazzn_urls_split.txt'
+RAW_STAT_FILE = 'svg_vae_data/final-dataset-train/final-dataset-stats-00000-of-00001'
+RAW_DATA_FILES = 'svg_vae_data/final-dataset-train/final-dataset-train*'
+URL_SPLITS = 'svg_vae_data/font_id_split_name.txt'
 
 
 class IdentityEncoder(object):
