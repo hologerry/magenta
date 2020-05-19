@@ -14,8 +14,9 @@ import pyarrow
 'id': binary/str,  # id of this glyph
 'binary_fp': binary/str}  # font identifier (provided in glyphazzn_urls.txt)
 '''
-glyph_list_path = 'svg_vae_data/glyph_list_train.pkl'
-target_beam_parquetio_file_prefix = 'svg_vae_data/glyphs-parquetio/glyphs-parquetio'
+cur_split = 'train'
+glyph_list_path = f"svg_vae_data/glyph_list_{cur_split}.pkl"
+target_beam_parquetio_file_prefix = f'svg_vae_data/glyphs-parquetio-{cur_split}/glyphs-parquetio'
 glyph_list = []
 fontdirs = []
 
@@ -28,7 +29,7 @@ if not os.path.exists(glyph_list_path):
         font_id = id_split_name.strip().split(', ')[0]
         split = id_split_name.strip().split(', ')[1]
 
-        if split == 'test':
+        if split != cur_split:
             continue
 
         cur_font_path = os.path.join(sfd_dir, split, font_id)
