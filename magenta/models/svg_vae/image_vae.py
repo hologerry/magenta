@@ -251,7 +251,7 @@ def image_vae():
     hparams.add_hparam('free_bits', 0.15)
 
     # data format hparams
-    hparams.add_hparam('num_categories', 62)
+    hparams.add_hparam('num_categories', 52)
 
     # problem hparams (required, don't modify)
     hparams.add_hparam('absolute', False)

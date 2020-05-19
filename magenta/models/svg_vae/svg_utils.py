@@ -52,11 +52,15 @@ def grouper(iterable, batch_size, fill_value=None):
 
 def map_uni_to_alphanum(uni):
     """Maps [0-9 A-Z a-z] to numbers 0-62."""
-    if 48 <= uni <= 57:
-        return uni - 48
-    elif 65 <= uni <= 90:
-        return uni - 65 + 10
-    return uni - 97 + 36
+    # if 48 <= uni <= 57:
+    #     return uni - 48
+    # elif 65 <= uni <= 90:
+    #     return uni - 65 + 10
+    # return uni - 97 + 36
+    """Maps [A-Z a-z] to numbers 0-62."""
+    if 65 <= uni <= 90:
+        return uni - 65
+    return uni - 97 + 26
 
 
 # ############ UTILS FOR CONVERTING SFD/SPLINESETS TO SVG PATHS ################
