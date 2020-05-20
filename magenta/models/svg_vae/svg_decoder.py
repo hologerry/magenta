@@ -330,7 +330,7 @@ def svg_decoder():
     """Basic hparams for SVG decoder."""
     hparams = common_hparams.basic_params1()
     hparams.daisy_chain_variables = False
-    hparams.batch_size = 128
+    hparams.batch_size = 512
     hparams.hidden_size = 1024
     hparams.num_hidden_layers = 2
     hparams.initializer = 'uniform_unit_scaling'
