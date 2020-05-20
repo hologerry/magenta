@@ -16,7 +16,8 @@
 """Beam pipelines to generate examples for the GlyphAzzn dataset."""
 from absl import app
 from absl import flags
-
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 import apache_beam as beam
 from magenta.models.svg_vae import svg_utils
 import numpy as np

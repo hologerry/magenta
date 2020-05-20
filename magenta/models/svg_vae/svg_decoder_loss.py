@@ -18,7 +18,8 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 from tensor2tensor.layers import common_layers
 from tensor2tensor.layers import modalities
 import tensorflow.compat.v1 as tf  # noqa

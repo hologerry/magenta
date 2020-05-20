@@ -18,6 +18,8 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 
 from magenta.models.image_stylization import ops
 from tensor2tensor.layers import common_hparams
