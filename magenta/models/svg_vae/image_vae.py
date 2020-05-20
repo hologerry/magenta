@@ -112,9 +112,9 @@ class ImageVAE(t2t_model.T2TModel):
                 with tf.name_scope(None), tf.name_scope('train' if train else 'test'):
                     tf.summary.image('rendered_out', dec_out.mean())
                     tf.summary.image('rendered_og', inputs)
-        tf.print(tf.shape(dec_out.mean()))
-        tf.print("sample bottle", tf.shape(sampled_bottleneck))
-        tf.print("b_loss", tf.shape(b_loss))
+        print(common_layers.shape_lis(dec_out.mean()))
+        print("sample bottle", common_layers.shape_lis(sampled_bottleneck))
+        print("b_loss", common_layers.shape_lis(b_loss))
         return dec_out.mean(), losses
 
     def bottleneck(self, x):
