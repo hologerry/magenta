@@ -277,12 +277,13 @@ class SVGDecoder(t2t_model.T2TModel):
             inputs = tf.nn.tanh(inputs)  # [batch, 51, 1024]
         print("inputs------------------------------------------------------------------------------------------------", inputs.get_shape())
         with tf.variable_scope('lstm_decoder', reuse=tf.AUTO_REUSE):
-            outputs, states = tf.nn.dynamic_rnn(
+            output = tf.nn.dynamic_rnn(
                 layers, inputs, sequence_length, initial_state=initial_state,
                 dtype=tf.float32, time_major=False)
-            print("outputs------------------------------------------------------------------------------------------------------------", outputs.get_shape())
-            print("states------------------------------------------------------------------------------------------------------------", states.get_shape())
-            return outputs, states
+            print("outputs------------------------------------------------------------------------------------------------------------", output[0].get_shape())
+            print("states 0 ------------------------------------------------------------------------------------------------------------", output[1][0].get_shape())
+            print("states 0 ------------------------------------------------------------------------------------------------------------", output[1][1].get_shape())
+            return output
 
     def lstm_cell(self, hparams, train):
         keep_prob = 1.0 - hparams.rec_dropout * tf.to_float(train)
