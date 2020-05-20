@@ -145,8 +145,8 @@ class GlyphAzznProblem(problem.Problem):
                 mean = np.concatenate((np.zeros([4]), mean[4:]), axis=0)
                 stdev = np.concatenate((np.ones([4]), stdev[4:]), axis=0)
                 # finally, save
-                np.save(tf.gfile.Open(os.path.join(data_dir, 'mean.npz'), 'w'), mean)
-                np.save(tf.gfile.Open(os.path.join(data_dir, 'stdev.npz'), 'w'), stdev)
+                np.save(tf.gfile.Open(os.path.join(data_dir, 'mean.npz'), 'wb'), mean)
+                np.save(tf.gfile.Open(os.path.join(data_dir, 'stdev.npz'), 'wb'), stdev)
                 logging.info('Generated mean and stdev npzs')
 
         for raw_data_file in tf.gfile.Glob(RAW_DATA_FILES):
@@ -194,9 +194,9 @@ class GlyphAzznProblem(problem.Problem):
         if not hasattr(self, 'mean_npz'):
             mean_filename = os.path.join(hparams.data_dir, 'mean.npz')
             stdev_filename = os.path.join(hparams.data_dir, 'stdev.npz')
-            with tf.gfile.Open(mean_filename, 'r') as f:
+            with tf.gfile.Open(mean_filename, 'rb') as f:
                 self.mean_npz = np.load(f)
-            with tf.gfile.Open(stdev_filename, 'r') as f:
+            with tf.gfile.Open(stdev_filename, 'rb') as f:
                 self.stdev_npz = np.load(f)
 
         example['targets_cls'] = tf.reshape(example['targets_cls'], [1])
@@ -241,9 +241,9 @@ class GlyphAzznProblem(problem.Problem):
             if not hasattr(self, 'mean_npz'):
                 mean_filename = os.path.join(hparams.data_dir, 'mean.npz')
                 stdev_filename = os.path.join(hparams.data_dir, 'stdev.npz')
-                with tf.gfile.open(mean_filename, 'r') as f:
+                with tf.gfile.open(mean_filename, 'rb') as f:
                     self.mean_npz = np.load(f)
-                with tf.gfile.open(stdev_filename, 'r') as f:
+                with tf.gfile.open(stdev_filename, 'rb') as f:
                     self.stdev_npz = np.load(f)
 
             values = []
