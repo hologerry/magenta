@@ -272,12 +272,12 @@ class SVGDecoder(t2t_model.T2TModel):
         with tf.variable_scope('pre_decoder', reuse=tf.AUTO_REUSE):
             inputs = tf.layers.dense(inputs, hparams.hidden_size, name='bottom')
             inputs = tf.nn.tanh(inputs)
-        print("inputs", tf.shape(inputs))
+        tf.print("inputs", tf.shape(inputs))
         with tf.variable_scope('lstm_decoder', reuse=tf.AUTO_REUSE):
             outputs = tf.nn.dynamic_rnn(
                 layers, inputs, sequence_length, initial_state=initial_state,
                 dtype=tf.float32, time_major=False)
-            print("outputs", tf.shape(outputs))
+            tf.print("outputs", tf.shape(outputs))
             return outputs
 
     def lstm_cell(self, hparams, train):
