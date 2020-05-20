@@ -28,7 +28,8 @@ from magenta.models.coconet import lib_tfsampling
 from magenta.models.coconet import lib_util
 import numpy as np
 import pretty_midi
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = tf.app.flags.FLAGS
 flags = tf.app.flags

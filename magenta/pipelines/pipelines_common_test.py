@@ -19,7 +19,8 @@ import functools
 from magenta.common import testing_lib as common_testing_lib
 from magenta.pipelines import pipelines_common
 import six
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class PipelineUnitsCommonTest(tf.test.TestCase):

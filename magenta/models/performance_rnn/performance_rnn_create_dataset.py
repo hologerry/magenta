@@ -25,7 +25,8 @@ import os
 from magenta.models.performance_rnn import performance_model
 from magenta.pipelines import performance_pipeline
 from magenta.pipelines import pipeline
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 flags = tf.app.flags
 FLAGS = tf.app.flags.FLAGS

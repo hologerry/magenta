@@ -18,7 +18,8 @@ import threading
 import time
 
 from magenta.common import concurrency
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class ConcurrencyTest(tf.test.TestCase):

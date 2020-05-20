@@ -15,7 +15,8 @@
 """Tests for beam search."""
 
 from magenta.common import beam_search
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class BeamSearchTest(tf.test.TestCase):

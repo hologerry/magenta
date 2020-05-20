@@ -25,7 +25,8 @@ from magenta.models.score2perf import datagen_beam
 from magenta.models.score2perf import music_encoders
 from magenta.music import testing_lib
 from magenta.music.protobuf import music_pb2
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class GenerateExamplesTest(tf.test.TestCase):

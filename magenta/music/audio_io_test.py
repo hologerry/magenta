@@ -25,7 +25,8 @@ from magenta.music import audio_io
 import numpy as np
 import scipy
 import six
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class AudioIoTest(tf.test.TestCase):

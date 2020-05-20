@@ -20,7 +20,8 @@ import magenta
 from magenta.models.improv_rnn import improv_rnn_config_flags
 from magenta.models.shared import events_rnn_graph
 from magenta.models.shared import events_rnn_train
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('run_dir', '/tmp/improv_rnn/logdir/run1',

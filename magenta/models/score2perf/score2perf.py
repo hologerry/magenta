@@ -30,7 +30,8 @@ from tensor2tensor.data_generators import problem
 from tensor2tensor.layers import modalities as t2t_modalities
 from tensor2tensor.models import transformer
 from tensor2tensor.utils import registry
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 # TODO(iansimon): figure out the best way not to hard-code these constants

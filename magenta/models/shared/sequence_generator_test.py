@@ -21,7 +21,8 @@ from __future__ import print_function
 from magenta.models.shared import sequence_generator
 from magenta.music import model
 from magenta.music.protobuf import generator_pb2
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class Model(model.BaseModel):

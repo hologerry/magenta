@@ -20,7 +20,8 @@ from magenta.models.coconet import lib_mask
 from magenta.models.coconet import lib_pianoroll
 from magenta.models.coconet import lib_util
 import numpy as np
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class Dataset(lib_util.Factory):

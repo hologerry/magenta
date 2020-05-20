@@ -22,7 +22,8 @@ from magenta.models.polyphony_rnn import polyphony_model
 from magenta.models.polyphony_rnn.polyphony_lib import PolyphonicEvent
 from magenta.models.shared import sequence_generator
 import magenta.music as mm
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class PolyphonyRnnSequenceGenerator(sequence_generator.BaseSequenceGenerator):

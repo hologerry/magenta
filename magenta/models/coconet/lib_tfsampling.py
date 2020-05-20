@@ -22,7 +22,8 @@ import time
 from magenta.models.coconet import lib_graph
 from magenta.models.coconet import lib_hparams
 import numpy as np
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = tf.app.flags.FLAGS
 

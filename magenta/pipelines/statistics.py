@@ -22,7 +22,8 @@ import abc
 import bisect
 import copy
 
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class MergeStatisticsError(Exception):

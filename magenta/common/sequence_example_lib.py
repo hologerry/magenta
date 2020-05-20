@@ -16,7 +16,8 @@
 
 import math
 
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 QUEUE_CAPACITY = 500
 SHUFFLE_MIN_AFTER_DEQUEUE = QUEUE_CAPACITY // 5

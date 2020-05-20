@@ -30,7 +30,8 @@ from magenta.music import abc_parser
 from magenta.music import midi_io
 from magenta.music import musicxml_reader
 from magenta.music import note_sequence_io
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = tf.app.flags.FLAGS
 

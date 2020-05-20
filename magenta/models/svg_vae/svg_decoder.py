@@ -24,7 +24,8 @@ from tensor2tensor.layers import common_layers
 from tensor2tensor.utils import registry
 from tensor2tensor.utils import t2t_model
 from tensor2tensor.utils import trainer_lib
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import rnn as contrib_rnn  # noqa
 
 

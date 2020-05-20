@@ -23,7 +23,8 @@ import os
 from magenta.models.coconet import lib_util
 import numpy as np
 import six
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 import yaml
 
 

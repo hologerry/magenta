@@ -20,7 +20,8 @@ from __future__ import print_function
 
 import math
 
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 import tensorflow_probability as tfp
 
 

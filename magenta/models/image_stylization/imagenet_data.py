@@ -30,7 +30,8 @@ from __future__ import print_function
 
 import os
 
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = tf.app.flags.FLAGS
 

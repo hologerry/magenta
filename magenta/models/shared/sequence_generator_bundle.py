@@ -15,7 +15,8 @@
 """Utility functions for handling bundle files."""
 
 from magenta.music.protobuf import generator_pb2
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from google.protobuf import message
 
 

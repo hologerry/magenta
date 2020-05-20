@@ -16,7 +16,8 @@
 
 from magenta.pipelines import statistics
 import six
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class StatisticsTest(tf.test.TestCase):

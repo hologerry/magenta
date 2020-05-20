@@ -42,7 +42,8 @@ from apache_beam.metrics import Metrics
 from magenta.models.onsets_frames_transcription import audio_label_data_utils
 from magenta.music import midi_io
 from magenta.music.protobuf import music_pb2
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = flags.FLAGS
 

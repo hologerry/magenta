@@ -21,7 +21,8 @@ from __future__ import print_function
 from magenta.models.onsets_frames_transcription import configs
 from magenta.models.onsets_frames_transcription import data
 from magenta.models.onsets_frames_transcription import infer
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 def main(argv):

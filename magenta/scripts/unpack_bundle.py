@@ -20,7 +20,8 @@ $ python magenta/scripts/unpack_bundle.py \
 """
 
 from magenta.models.shared import sequence_generator_bundle
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('bundle_path', '',

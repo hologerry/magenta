@@ -21,7 +21,8 @@ Module.
 
 import numpy as np
 import sonnet as snt
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 def product_two_guassian_pdfs(mu_1, sigma_1, mu_2, sigma_2):

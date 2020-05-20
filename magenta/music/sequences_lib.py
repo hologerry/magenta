@@ -30,7 +30,8 @@ from magenta.music import constants
 from magenta.music.protobuf import music_pb2
 import numpy as np
 from six.moves import range  # pylint: disable=redefined-builtin
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 # Set the quantization cutoff.
 # Note events before this cutoff are rounded down to nearest step. Notes

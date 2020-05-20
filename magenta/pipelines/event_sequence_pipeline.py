@@ -15,7 +15,8 @@
 """Pipeline for event sequences."""
 
 from magenta.pipelines import pipeline
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class EncoderPipeline(pipeline.Pipeline):

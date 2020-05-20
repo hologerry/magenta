@@ -28,7 +28,8 @@ from magenta.models.onsets_frames_transcription import train_util
 from magenta.music import midi_io
 from magenta.music.protobuf import music_pb2
 import six
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = tf.app.flags.FLAGS
 

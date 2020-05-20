@@ -22,7 +22,8 @@ from magenta.models.image_stylization import imagenet_data
 import numpy as np
 import scipy
 import scipy.misc
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import slim as contrib_slim  # noqa
 
 slim = contrib_slim

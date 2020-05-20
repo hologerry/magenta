@@ -24,7 +24,8 @@ from __future__ import print_function
 
 import os
 
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import slim as contrib_slim  # noqa
 
 slim = contrib_slim

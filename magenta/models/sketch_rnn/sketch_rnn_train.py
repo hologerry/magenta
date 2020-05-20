@@ -26,7 +26,8 @@ import numpy as np
 import requests
 import six
 from six.moves.urllib.request import urlretrieve
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 tf.logging.set_verbosity(tf.logging.INFO)
 

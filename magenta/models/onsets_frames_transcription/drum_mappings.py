@@ -17,7 +17,8 @@
 
 from magenta.models.onsets_frames_transcription import constants
 from magenta.music.protobuf import music_pb2
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 # Names for pitches in the Groove MIDI Dataset and Expanded Groove MIDI Dataset.
 GROOVE_PITCH_NAMES = {

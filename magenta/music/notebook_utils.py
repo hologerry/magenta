@@ -33,7 +33,8 @@ import pandas as pd
 from scipy.io import wavfile
 import six
 from six.moves import urllib
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 _DEFAULT_SAMPLE_RATE = 44100
 _play_id = 0  # Used for ephemeral colab_play.

@@ -19,7 +19,8 @@ from __future__ import division
 from __future__ import print_function
 
 from magenta.music import drums_encoder_decoder
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 DRUMS = lambda *args: frozenset(args)  # noqa
 NO_DRUMS = frozenset()

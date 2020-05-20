@@ -23,7 +23,8 @@ import tempfile
 
 from magenta.models.image_stylization import model
 from magenta.models.image_stylization import ops
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 flags = tf.flags
 flags.DEFINE_integer('num_styles', 1,

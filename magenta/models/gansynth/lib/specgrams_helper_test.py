@@ -24,7 +24,8 @@ from absl import flags
 from absl.testing import parameterized
 from magenta.models.gansynth.lib import specgrams_helper
 import numpy as np
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = flags.FLAGS
 

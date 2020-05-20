@@ -31,7 +31,8 @@ import os
 from magenta.models.arbitrary_image_stylization import arbitrary_image_stylization_build_model as build_model
 from magenta.models.image_stylization import image_utils
 import numpy as np
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import slim as contrib_slim  # noqa
 
 slim = contrib_slim

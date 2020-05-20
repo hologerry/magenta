@@ -22,7 +22,8 @@ from magenta.music import lead_sheets_lib
 from magenta.music import melodies_lib
 from magenta.music import testing_lib as music_testing_lib
 from magenta.music.protobuf import music_pb2
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 NOTE_OFF = constants.MELODY_NOTE_OFF
 NO_EVENT = constants.MELODY_NO_EVENT

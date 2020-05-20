@@ -18,7 +18,8 @@ import os
 
 from magenta.music import musicnet_io
 import numpy as np
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class MusicNetIoTest(tf.test.TestCase):

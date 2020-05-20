@@ -38,7 +38,8 @@ import math
 
 from magenta.music import mfcc_mel
 import numpy as np
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 def _stft_magnitude_full_tf(waveform_input, window_length_samples,

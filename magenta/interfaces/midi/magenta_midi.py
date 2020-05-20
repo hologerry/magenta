@@ -37,7 +37,8 @@ from magenta.models.polyphony_rnn import polyphony_sequence_generator
 from magenta.models.shared import sequence_generator_bundle
 import six
 from six.moves import input  # pylint: disable=redefined-builtin
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = tf.app.flags.FLAGS
 

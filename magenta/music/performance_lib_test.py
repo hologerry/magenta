@@ -17,7 +17,8 @@ from magenta.music import performance_lib
 from magenta.music import sequences_lib
 from magenta.music import testing_lib
 from magenta.music.protobuf import music_pb2
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class PerformanceLibTest(tf.test.TestCase):

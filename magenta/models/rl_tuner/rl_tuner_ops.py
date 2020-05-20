@@ -23,7 +23,8 @@ import random
 
 import numpy as np
 from six.moves import range  # pylint: disable=redefined-builtin
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import rnn as contrib_rnn  # noqa
 from tensorflow.contrib import training as contrib_training  # noqa
 

@@ -24,7 +24,8 @@ from magenta.music.protobuf import music_pb2
 from magenta.pipelines import chord_pipelines
 from magenta.pipelines import lead_sheet_pipelines
 from magenta.pipelines import melody_pipelines
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 NOTE_OFF = constants.MELODY_NOTE_OFF
 NO_EVENT = constants.MELODY_NO_EVENT

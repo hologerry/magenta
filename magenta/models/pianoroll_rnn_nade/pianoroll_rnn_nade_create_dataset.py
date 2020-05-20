@@ -23,7 +23,8 @@ import os
 from magenta.models.pianoroll_rnn_nade import pianoroll_rnn_nade_model
 from magenta.pipelines import pianoroll_pipeline
 from magenta.pipelines import pipeline
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 flags = tf.app.flags
 FLAGS = tf.app.flags.FLAGS

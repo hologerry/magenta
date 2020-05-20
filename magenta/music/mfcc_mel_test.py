@@ -20,7 +20,8 @@ from __future__ import print_function
 
 from magenta.music import mfcc_mel
 import numpy as np
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class MfccMelTest(tf.test.TestCase):

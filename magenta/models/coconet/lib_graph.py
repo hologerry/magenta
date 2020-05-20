@@ -22,7 +22,8 @@ import os
 
 from magenta.models.coconet import lib_hparams
 from magenta.models.coconet import lib_tfutil
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import layers as contrib_layers  # noqa
 
 

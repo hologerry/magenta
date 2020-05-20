@@ -20,7 +20,8 @@ import tempfile
 
 from magenta.music import note_sequence_io
 from magenta.scripts import convert_dir_to_note_sequences
-import tensorflow.compat.v1 as tf  # noqa
+import tensorflow.compat.v1 as tf
+tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 
 class ConvertMidiDirToSequencesTest(tf.test.TestCase):
