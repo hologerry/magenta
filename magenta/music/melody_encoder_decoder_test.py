@@ -22,10 +22,8 @@ from magenta.music import constants
 from magenta.music import encoder_decoder
 from magenta.music import melodies_lib
 from magenta.music import melody_encoder_decoder
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 NOTE_OFF = constants.MELODY_NOTE_OFF
 NO_EVENT = constants.MELODY_NO_EVENT

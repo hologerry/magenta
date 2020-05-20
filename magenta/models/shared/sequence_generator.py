@@ -22,10 +22,8 @@ import os
 import tempfile
 
 from magenta.music.protobuf import generator_pb2
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 class SequenceGeneratorError(Exception):  # pylint:disable=g-bad-exception-name

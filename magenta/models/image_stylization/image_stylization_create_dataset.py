@@ -30,10 +30,8 @@ import os
 from magenta.models.image_stylization import image_utils
 from magenta.models.image_stylization import learning
 import scipy
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 flags = tf.app.flags
 flags.DEFINE_string('style_files', None, 'Style image files.')

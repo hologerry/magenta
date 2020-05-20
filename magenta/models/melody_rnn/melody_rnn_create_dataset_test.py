@@ -20,10 +20,8 @@ from magenta.models.melody_rnn import melody_rnn_pipeline
 from magenta.music.protobuf import music_pb2
 from magenta.pipelines import melody_pipelines
 from magenta.pipelines import note_sequence_pipelines
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 from tensorflow.contrib import training as contrib_training  # noqa
 
 FLAGS = tf.app.flags.FLAGS

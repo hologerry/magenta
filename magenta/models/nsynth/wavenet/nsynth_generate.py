@@ -19,10 +19,8 @@ import os
 
 from magenta.models.nsynth import utils
 from magenta.models.nsynth.wavenet import fastgen
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 FLAGS = tf.app.flags.FLAGS
 

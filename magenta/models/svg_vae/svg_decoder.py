@@ -24,10 +24,8 @@ from tensor2tensor.layers import common_layers
 from tensor2tensor.utils import registry
 from tensor2tensor.utils import t2t_model
 from tensor2tensor.utils import trainer_lib
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 from tensorflow.contrib import rnn as contrib_rnn  # noqa
 
 
@@ -126,7 +124,6 @@ class SVGDecoder(t2t_model.T2TModel):
                     targets_length, hparams_decoder, features['targets_cls'],
                     train, initial_state=dec_initial_state,
                     bottleneck=sampled_bottleneck)
-            print("decoder_outputs------------------------------------------------------------------------", decoder_outputs.get_shape())
             ret = tf.expand_dims(decoder_outputs, axis=2)
 
         return ret, losses
@@ -275,14 +272,10 @@ class SVGDecoder(t2t_model.T2TModel):
         with tf.variable_scope('pre_decoder', reuse=tf.AUTO_REUSE):
             inputs = tf.layers.dense(inputs, hparams.hidden_size, name='bottom')
             inputs = tf.nn.tanh(inputs)  # [batch, 51, 1024]
-        print("inputs------------------------------------------------------------------------------------------------", inputs.get_shape())
         with tf.variable_scope('lstm_decoder', reuse=tf.AUTO_REUSE):
             output = tf.nn.dynamic_rnn(
                 layers, inputs, sequence_length, initial_state=initial_state,
                 dtype=tf.float32, time_major=False)
-            print("outputs------------------------------------------------------------------------------------------------------------", output[0].get_shape())
-            print("states 0 ------------------------------------------------------------------------------------------------------------", output[1][0].get_shape())
-            print("states 0 ------------------------------------------------------------------------------------------------------------", output[1][1].get_shape())
             return output
 
     def lstm_cell(self, hparams, train):

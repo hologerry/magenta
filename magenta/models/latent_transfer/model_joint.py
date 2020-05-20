@@ -26,10 +26,8 @@ from __future__ import print_function
 from magenta.models.latent_transfer import nn
 from six import iteritems
 import sonnet as snt
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 import tensorflow_probability as tfp
 
 ds = tfp.distributions

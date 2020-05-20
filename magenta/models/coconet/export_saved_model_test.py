@@ -24,10 +24,8 @@ import tempfile
 from magenta.models.coconet import export_saved_model
 from magenta.models.coconet import lib_graph
 from magenta.models.coconet import lib_hparams
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 class ExportSavedModelTest(tf.test.TestCase):

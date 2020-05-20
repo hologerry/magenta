@@ -16,10 +16,8 @@
 
 from magenta.models.rl_tuner import rl_tuner_ops
 import numpy as np
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 def compute_composition_stats(rl_tuner,

@@ -28,10 +28,8 @@ from magenta.models.piano_genie.configs import get_named_config
 from magenta.models.piano_genie.loader import load_noteseqs
 from magenta.models.piano_genie.model import build_genie_model
 import numpy as np
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 flags = tf.app.flags
 FLAGS = flags.FLAGS

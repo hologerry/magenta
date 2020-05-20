@@ -28,10 +28,8 @@ import numpy as np
 import six
 from six.moves import range
 from six.moves import zip
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 FLAGS = tf.app.flags.FLAGS
 flags = tf.app.flags

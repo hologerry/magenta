@@ -19,10 +19,8 @@ from magenta.models.shared import events_rnn_model
 import magenta.music as mm
 from magenta.music.protobuf import music_pb2
 from magenta.pipelines import pianoroll_pipeline
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 from tensorflow.contrib import training as contrib_training  # noqa
 
 FLAGS = tf.app.flags.FLAGS

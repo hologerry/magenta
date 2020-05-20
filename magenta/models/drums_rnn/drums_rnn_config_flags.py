@@ -15,10 +15,8 @@
 """Provides a class, defaults, and utils for Drums RNN model configuration."""
 
 from magenta.models.drums_rnn import drums_rnn_model
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string(

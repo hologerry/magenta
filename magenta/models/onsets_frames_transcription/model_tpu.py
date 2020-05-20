@@ -20,10 +20,8 @@ from __future__ import print_function
 
 from magenta.models.onsets_frames_transcription import constants
 from magenta.models.onsets_frames_transcription import estimator_spec_util
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 import tensorflow.contrib.slim as slim  # noqa
 from tensorflow.contrib import layers as contrib_layers  # noqa

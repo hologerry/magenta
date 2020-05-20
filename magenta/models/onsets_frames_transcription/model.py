@@ -26,10 +26,8 @@ from magenta.models.onsets_frames_transcription import constants
 from magenta.models.onsets_frames_transcription import infer_util
 from magenta.models.onsets_frames_transcription import metrics
 
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 import tensorflow.contrib.slim as slim  # noqa
 from tensorflow.contrib import cudnn_rnn as contrib_cudnn_rnn  # noqa

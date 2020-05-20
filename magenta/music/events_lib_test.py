@@ -17,10 +17,8 @@
 import copy
 
 from magenta.music import events_lib
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 class EventsLibTest(tf.test.TestCase):

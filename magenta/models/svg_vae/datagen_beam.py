@@ -21,10 +21,8 @@ import apache_beam as beam
 from magenta.models.svg_vae import svg_utils
 import numpy as np
 from tensor2tensor.data_generators import generator_utils
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 FLAGS = flags.FLAGS

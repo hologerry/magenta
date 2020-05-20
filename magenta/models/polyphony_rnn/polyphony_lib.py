@@ -25,10 +25,8 @@ from magenta.music import sequences_lib
 from magenta.music.protobuf import music_pb2
 from magenta.pipelines import statistics
 from six.moves import range  # pylint: disable=redefined-builtin
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 DEFAULT_STEPS_PER_QUARTER = constants.DEFAULT_STEPS_PER_QUARTER
 MAX_MIDI_PITCH = constants.MAX_MIDI_PITCH

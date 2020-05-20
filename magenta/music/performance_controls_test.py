@@ -16,10 +16,8 @@
 
 from magenta.music import performance_controls
 from magenta.music import performance_lib
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 class NoteDensityPerformanceControlSignalTest(tf.test.TestCase):

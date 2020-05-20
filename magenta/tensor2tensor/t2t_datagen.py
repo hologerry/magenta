@@ -23,10 +23,8 @@ from __future__ import print_function
 from magenta.tensor2tensor import models  # noqa
 from magenta.tensor2tensor import problems  # noqa
 from tensor2tensor.bin import t2t_datagen
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 def main(argv):

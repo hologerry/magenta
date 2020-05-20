@@ -24,10 +24,8 @@ import tempfile
 from magenta.models.arbitrary_image_stylization \
     import arbitrary_image_stylization_build_mobilenet_model as build_mobilenet_model
 import numpy as np
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 flags = tf.flags
 flags.DEFINE_float('alpha', 0.25, 'Width multiplier of the transform model.')

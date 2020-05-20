@@ -41,10 +41,8 @@ from __future__ import print_function
 from absl import flags
 
 from magenta.models.arbitrary_image_stylization import arbitrary_image_stylization_build_model
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 flags.DEFINE_string('checkpoint', None, 'Path to the model checkpoint.')
 flags.DEFINE_string('export_path', None, 'Path where to save the hub module.')

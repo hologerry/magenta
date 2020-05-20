@@ -24,10 +24,8 @@ from magenta.models.shared import events_rnn_graph
 import magenta.music as mm
 import numpy as np
 from six.moves import range  # pylint: disable=redefined-builtin
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 from tensorflow.contrib import training as contrib_training  # noqa
 
 # Model state when generating event sequences, consisting of the next inputs to

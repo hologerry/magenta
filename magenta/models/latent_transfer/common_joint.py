@@ -47,10 +47,8 @@ from magenta.models.latent_transfer import common
 from magenta.models.latent_transfer import model_dataspace
 import numpy as np
 from scipy.io import wavfile
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 FLAGS = tf.flags.FLAGS
 tf.flags.DEFINE_string(

@@ -27,10 +27,8 @@ from magenta.music import midi_io
 from magenta.music.protobuf import music_pb2
 import mido
 import pretty_midi
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 # self.midi_simple_filename contains a c-major scale of 8 quarter notes each
 # with a sustain of .95 of the entire note. Here are the first two notes dumped

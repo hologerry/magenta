@@ -26,10 +26,8 @@ from magenta.common import concurrency
 from magenta.music.protobuf import music_pb2
 import mido
 from six.moves import queue as Queue
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 _DEFAULT_METRONOME_TICK_DURATION = 0.05
 _DEFAULT_METRONOME_PROGRAM = 117  # Melodic Tom

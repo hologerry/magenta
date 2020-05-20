@@ -19,10 +19,8 @@ from __future__ import division
 from __future__ import print_function
 
 from tensor2tensor.layers import common_layers
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 from tensorflow.contrib.eager.python import tfe as contrib_eager  # noqa
 
 

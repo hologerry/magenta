@@ -20,10 +20,8 @@ import collections
 import magenta
 from magenta.common import Nade
 from magenta.models.shared import events_rnn_graph
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 from tensorflow.contrib import metrics as contrib_metrics  # noqa
 from tensorflow.contrib import seq2seq as contrib_seq2seq  # noqa
 from tensorflow.contrib import slim as contrib_slim  # noqa

@@ -23,10 +23,8 @@ from magenta.music.protobuf import music_pb2  # noqa
 from magenta.pipelines import pipeline  # noqa
 from magenta.pipelines import statistics  # noqa
 import numpy as np  # noqa
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 class MelodyExtractor(pipeline.Pipeline):

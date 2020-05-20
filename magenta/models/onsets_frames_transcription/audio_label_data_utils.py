@@ -29,10 +29,8 @@ from magenta.music import sequences_lib
 from magenta.music.protobuf import music_pb2
 
 import numpy as np
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 def velocity_range_from_sequence(ns):

@@ -21,10 +21,8 @@ import numpy as np
 
 from tensor2tensor.layers import common_layers
 from tensor2tensor.layers import modalities
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 # pylint: disable=redefined-outer-name

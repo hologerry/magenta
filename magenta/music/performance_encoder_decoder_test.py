@@ -22,10 +22,8 @@ from magenta.music.performance_encoder_decoder import ModuloPerformanceEventSequ
 from magenta.music.performance_encoder_decoder import NotePerformanceEventSequenceEncoderDecoder
 from magenta.music.performance_encoder_decoder import PerformanceModuloEncoding
 from magenta.music.performance_lib import PerformanceEvent
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 cos = math.cos
 sin = math.sin

@@ -34,10 +34,8 @@ from magenta.models.latent_transfer import model_joint
 import numpy as np
 import six
 from six.moves import range
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 from tqdm import tqdm
 
 FLAGS = tf.flags.FLAGS

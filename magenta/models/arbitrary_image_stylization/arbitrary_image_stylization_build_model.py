@@ -18,10 +18,8 @@
 from magenta.models.arbitrary_image_stylization import arbitrary_image_stylization_losses as losses
 from magenta.models.arbitrary_image_stylization import nza_model as transformer_model
 from magenta.models.image_stylization import ops
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 from tensorflow.contrib import slim as contrib_slim  # noqa
 from tensorflow.contrib.slim.python.slim.nets import inception_v3  # noqa
 

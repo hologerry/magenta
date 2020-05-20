@@ -23,10 +23,8 @@ import collections
 from magenta.pipelines import dag_pipeline
 from magenta.pipelines import pipeline
 from magenta.pipelines import statistics
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 Type0 = collections.namedtuple('Type0', ['x', 'y', 'z'])
 Type1 = collections.namedtuple('Type1', ['x', 'y'])

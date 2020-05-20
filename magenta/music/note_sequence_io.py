@@ -17,10 +17,8 @@
 import hashlib
 
 from magenta.music.protobuf import music_pb2
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 def generate_note_sequence_id(filename, collection_name, source_type):

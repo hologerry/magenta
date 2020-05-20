@@ -25,10 +25,8 @@ from __future__ import print_function
 import abc
 
 import six
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 class BaseModel(six.with_metaclass(abc.ABCMeta, object)):

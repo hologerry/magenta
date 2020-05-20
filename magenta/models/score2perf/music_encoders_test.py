@@ -24,10 +24,8 @@ import magenta
 from magenta.models.score2perf import music_encoders
 from magenta.music import testing_lib
 from magenta.music.protobuf import music_pb2
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 
 class MidiPerformanceEncoderTest(tf.test.TestCase):

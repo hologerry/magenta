@@ -16,10 +16,8 @@
 
 from magenta.music import chords_encoder_decoder
 from magenta.music import constants
-import tensorflow.compat.v1 as tf
-import os
-os.system('clear')
-tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
+import tensorflow.compat.v1 as tf  # noqa
+
 
 NO_CHORD = constants.NO_CHORD
 
