@@ -20,8 +20,7 @@ import numpy as np
 from PIL import Image
 from six.moves import zip_longest
 from skimage import draw
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
+
 import tensorflow.compat.v1 as tf  # noqa
 
 
