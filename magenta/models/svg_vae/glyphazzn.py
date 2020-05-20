@@ -31,8 +31,8 @@ import tensorflow.compat.v1 as tf  # noqa
 
 # Raw dataset paths (from datagen_beam.py)
 # (Run t2t datagen on GlyphAzznProblem to convert these into a t2t dataset)
-RAW_STAT_FILE = 'svg_vae_data/final-dataset-train/final-dataset-stats-00000-of-00001'
-RAW_DATA_FILES = 'svg_vae_data/final-dataset-train/final-dataset-train*'
+RAW_STAT_FILE = 'svg_vae_data/final-dataset/final-dataset-stats-00000-of-00001'
+RAW_DATA_FILES = 'svg_vae_data/final-dataset/final-dataset*'
 URL_SPLITS = 'svg_vae_data/font_id_split_name.txt'
 
 
