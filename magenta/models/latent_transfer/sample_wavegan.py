@@ -26,6 +26,8 @@ import os
 import numpy as np
 from scipy.io import wavfile
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tqdm import tqdm
 

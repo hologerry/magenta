@@ -33,6 +33,8 @@ from magenta.pipelines import drum_pipelines
 from magenta.pipelines import melody_pipelines
 import numpy as np
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 import tensorflow_datasets as tfds
 from tensorflow.contrib import data as contrib_data  # noqa

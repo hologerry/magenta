@@ -25,6 +25,8 @@ import magenta.music as mm
 import numpy as np
 from six.moves import range  # pylint: disable=redefined-builtin
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import training as contrib_training  # noqa
 

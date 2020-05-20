@@ -42,6 +42,8 @@ from tensor2tensor.utils import mlperf_log
 from tensor2tensor.utils import registry
 
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 # pylint: disable=g-direct-tensorflow-import

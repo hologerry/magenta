@@ -17,6 +17,8 @@
 import magenta
 from magenta.models.melody_rnn import melody_rnn_model
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import training as contrib_training  # noqa
 

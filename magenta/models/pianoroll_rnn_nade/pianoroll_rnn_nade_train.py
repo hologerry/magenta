@@ -21,6 +21,8 @@ from magenta.models.pianoroll_rnn_nade import pianoroll_rnn_nade_graph
 from magenta.models.pianoroll_rnn_nade import pianoroll_rnn_nade_model
 from magenta.models.shared import events_rnn_train
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = tf.app.flags.FLAGS

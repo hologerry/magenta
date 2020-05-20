@@ -19,6 +19,8 @@ All configs should have encode() and decode().
 
 from magenta.models.nsynth import utils
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import slim as contrib_slim  # noqa
 

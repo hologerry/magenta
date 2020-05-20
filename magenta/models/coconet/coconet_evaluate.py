@@ -25,6 +25,8 @@ from magenta.models.coconet import lib_graph
 from magenta.models.coconet import lib_util
 import numpy as np
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = tf.app.flags.FLAGS

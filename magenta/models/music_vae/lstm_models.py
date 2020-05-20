@@ -27,6 +27,8 @@ from magenta.models.music_vae import base_model
 from magenta.models.music_vae import lstm_utils
 import numpy as np
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 import tensorflow_probability as tfp
 from tensorflow.contrib import rnn as contrib_rnn  # noqa

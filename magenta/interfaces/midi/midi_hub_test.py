@@ -25,6 +25,8 @@ from magenta.music.protobuf import music_pb2
 import mido
 from six.moves import queue as Queue
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 Note = collections.namedtuple('Note', ['pitch', 'velocity', 'start', 'end'])

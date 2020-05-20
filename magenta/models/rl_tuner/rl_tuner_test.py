@@ -27,6 +27,8 @@ from magenta.models.rl_tuner import rl_tuner
 import matplotlib
 import matplotlib.pyplot as plt    # noqa
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 # Need to use 'Agg' option for plotting and saving files from command line.

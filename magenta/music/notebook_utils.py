@@ -34,6 +34,8 @@ from scipy.io import wavfile
 import six
 from six.moves import urllib
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 _DEFAULT_SAMPLE_RATE = 44100

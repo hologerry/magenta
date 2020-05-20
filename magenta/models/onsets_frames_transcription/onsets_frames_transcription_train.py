@@ -26,6 +26,8 @@ from magenta.models.onsets_frames_transcription import data
 from magenta.models.onsets_frames_transcription import train_util
 
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 

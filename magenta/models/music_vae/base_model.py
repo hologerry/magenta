@@ -23,6 +23,8 @@ import abc
 
 import six
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 import tensorflow_probability as tfp
 from tensorflow.contrib import metrics as contrib_metrics  # noqa

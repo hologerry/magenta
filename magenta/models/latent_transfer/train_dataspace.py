@@ -29,6 +29,8 @@ from magenta.models.latent_transfer import model_dataspace
 from magenta.models.latent_transfer import nn
 import numpy as np
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 configs_module_prefix = 'magenta.models.latent_transfer.configs'

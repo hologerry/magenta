@@ -24,6 +24,8 @@ import numpy as np
 from tensor2tensor.layers import common_hparams
 from tensor2tensor.utils import expert_utils
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 

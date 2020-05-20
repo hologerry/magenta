@@ -24,6 +24,8 @@ from magenta.models.improv_rnn import improv_rnn_config_flags
 from magenta.models.improv_rnn import improv_rnn_pipeline
 from magenta.pipelines import pipeline
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 flags = tf.app.flags

@@ -22,6 +22,8 @@ from magenta.music import encoder_decoder
 from magenta.music import testing_lib
 import numpy as np
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 

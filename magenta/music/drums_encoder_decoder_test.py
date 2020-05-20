@@ -20,6 +20,8 @@ from __future__ import print_function
 
 from magenta.music import drums_encoder_decoder
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 DRUMS = lambda *args: frozenset(args)  # noqa

@@ -29,6 +29,8 @@ from magenta.music.protobuf import music_pb2
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 

@@ -21,6 +21,8 @@ from __future__ import print_function
 import collections
 
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import cudnn_rnn as contrib_cudnn_rnn  # noqa
 from tensorflow.contrib import rnn  # noqa

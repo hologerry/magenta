@@ -28,6 +28,8 @@ from magenta.music.protobuf import music_pb2
 import mido
 import pretty_midi
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 # self.midi_simple_filename contains a c-major scale of 8 quarter notes each

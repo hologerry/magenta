@@ -22,6 +22,8 @@ from __future__ import print_function
 from magenta.models.nsynth import utils
 import numpy as np
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import slim as contrib_slim  # noqa
 from tensorflow.contrib import training as contrib_training  # noqa

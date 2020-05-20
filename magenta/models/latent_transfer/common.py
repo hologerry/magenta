@@ -42,6 +42,8 @@ from magenta.models.latent_transfer import local_mnist
 import numpy as np
 from PIL import Image
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 FLAGS = tf.flags.FLAGS

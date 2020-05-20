@@ -17,6 +17,8 @@
 import math
 
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 QUEUE_CAPACITY = 500

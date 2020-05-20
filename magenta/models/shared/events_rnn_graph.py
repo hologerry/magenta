@@ -24,6 +24,8 @@ import magenta
 import numpy as np
 import six
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import cudnn_rnn as contrib_cudnn_rnn  # noqa
 from tensorflow.contrib import layers as contrib_layers  # noqa

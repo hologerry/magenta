@@ -32,6 +32,8 @@ from magenta.models.shared import sequence_generator_bundle
 from magenta.music.protobuf import generator_pb2
 from magenta.music.protobuf import music_pb2
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 CHORD_SYMBOL = music_pb2.NoteSequence.TextAnnotation.CHORD_SYMBOL

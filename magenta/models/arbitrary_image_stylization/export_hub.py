@@ -42,6 +42,8 @@ from absl import flags
 
 from magenta.models.arbitrary_image_stylization import arbitrary_image_stylization_build_model
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 flags.DEFINE_string('checkpoint', None, 'Path to the model checkpoint.')

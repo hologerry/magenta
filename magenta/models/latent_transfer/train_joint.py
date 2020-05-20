@@ -35,6 +35,8 @@ import numpy as np
 import six
 from six.moves import range
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tqdm import tqdm
 

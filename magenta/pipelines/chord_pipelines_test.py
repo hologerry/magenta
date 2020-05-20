@@ -22,6 +22,8 @@ from magenta.music.protobuf import music_pb2
 from magenta.pipelines import chord_pipelines
 from magenta.pipelines import melody_pipelines
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 NO_CHORD = constants.NO_CHORD

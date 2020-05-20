@@ -23,6 +23,8 @@ from magenta.music.performance_encoder_decoder import NotePerformanceEventSequen
 from magenta.music.performance_encoder_decoder import PerformanceModuloEncoding
 from magenta.music.performance_lib import PerformanceEvent
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 cos = math.cos

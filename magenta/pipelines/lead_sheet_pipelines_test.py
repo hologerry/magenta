@@ -25,6 +25,8 @@ from magenta.pipelines import chord_pipelines
 from magenta.pipelines import lead_sheet_pipelines
 from magenta.pipelines import melody_pipelines
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 NOTE_OFF = constants.MELODY_NOTE_OFF

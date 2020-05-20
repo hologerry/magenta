@@ -22,6 +22,8 @@ from magenta.models.image_stylization import learning as learning_utils
 from magenta.models.image_stylization import vgg
 import numpy as np
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 

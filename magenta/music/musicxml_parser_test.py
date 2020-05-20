@@ -29,6 +29,8 @@ from magenta.music import musicxml_reader
 from magenta.music import testing_lib
 from magenta.music.protobuf import music_pb2
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 
 # Shortcut to CHORD_SYMBOL annotation type.

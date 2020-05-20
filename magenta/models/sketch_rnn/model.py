@@ -20,6 +20,8 @@ import random
 from magenta.models.sketch_rnn import rnn
 import numpy as np
 import tensorflow.compat.v1 as tf
+import os
+os.system('clear')
 tf.logging.set_verbosity(tf.logging.ERROR)  # noqa
 from tensorflow.contrib import rnn as contrib_rnn  # noqa
 from tensorflow.contrib import training as contrib_training  # noqa
