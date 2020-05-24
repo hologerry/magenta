@@ -205,12 +205,10 @@ class GlyphAzznProblem(problem.Problem):
 
         example['targets_rel'] = tf.reshape(example['targets_rel'], [51, 1, 10])
         # normalize (via gaussian)
-        example['targets_rel'] = (example['targets_rel'] -
-                                  self.mean_npz) / self.stdev_npz
+        example['targets_rel'] = (example['targets_rel'] - self.mean_npz) / self.stdev_npz
 
         # redefine shape inside model!
-        example['targets_psr'] = tf.reshape(example['targets_rnd'],
-                                            [1, 64 * 64]) / 255.
+        example['targets_psr'] = tf.reshape(example['targets_rnd'], [1, 64 * 64]) / 255.
         del example['targets_rnd']
 
         if hparams.just_render:
@@ -271,8 +269,7 @@ class GlyphAzznProblem(problem.Problem):
 
                 # sampled text summary
                 output_svg = to_img([np.reshape(denorm_outputs, [-1, 30])])
-                values.append(svg_utils.make_text_summary_value(output_svg,
-                                                                'img/sampled'))
+                values.append(svg_utils.make_text_summary_value(output_svg, 'img/sampled'))
 
                 # original text summary
                 target_svg = to_img([np.reshape(denorm_targets, [-1, 30])])
