@@ -24,7 +24,6 @@ from tensor2tensor.data_generators import generator_utils
 import tensorflow.compat.v1 as tf  # noqa
 
 
-
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'pipeline_options', '',
@@ -199,16 +198,13 @@ def create_glyphazzn_dataset(filepattern, output_path):
         """Pipeline for creating glyphazzn dataset."""
         attrs = ['uni', 'width', 'vwidth', 'sfd', 'id', 'binary_fp']
 
-        examples = root | 'Read' >> beam.io.parquetio.ReadFromParquet(
-            file_pattern=filepattern, columns=attrs)
+        examples = root | 'Read' >> beam.io.parquetio.ReadFromParquet(file_pattern=filepattern, columns=attrs)
 
         examples = examples | 'FilterBadIcons' >> beam.Filter(_is_valid_glyph)
         examples = examples | 'ConvertToPath' >> beam.Map(_convert_to_path)
-        examples = examples | 'FilterBadPathLenghts' >> beam.Filter(
-            _is_valid_path)
+        examples = examples | 'FilterBadPathLenghts' >> beam.Filter(_is_valid_path)
         examples = examples | 'ProcessAndConvert' >> beam.Map(_create_example)
-        (examples | 'WriteToTFRecord' >> beam.io.tfrecordio.WriteToTFRecord(
-            output_path, num_shards=90))
+        (examples | 'WriteToTFRecord' >> beam.io.tfrecordio.WriteToTFRecord(output_path, num_shards=90))
     return pipeline
 
 
@@ -216,13 +212,10 @@ def get_stats_of_glyphazzn(filepattern, output_path):
     """Computes the Mean and Std across examples in glyphazzn dataset."""
     def pipeline(root):
         """Pipeline for computing means/std from dataset."""
-        examples = root | 'Read' >> beam.io.tfrecordio.ReadFromTFRecord(
-            filepattern)
+        examples = root | 'Read' >> beam.io.tfrecordio.ReadFromTFRecord(filepattern)
         examples = examples | 'Deserialize' >> beam.Map(_decode_tfexample)
-        examples = examples | 'GetMeanStdev' >> beam.CombineGlobally(
-            MeanStddev())
-        examples = examples | 'MeanStdevToSerializedTFRecord' >> beam.Map(
-            _mean_to_example)
+        examples = examples | 'GetMeanStdev' >> beam.CombineGlobally(MeanStddev())
+        examples = examples | 'MeanStdevToSerializedTFRecord' >> beam.Map(_mean_to_example)
         (examples | 'WriteToTFRecord' >> beam.io.tfrecordio.WriteToTFRecord(
             output_path, coder=beam.coders.coders.ProtoCoder(tf.train.Example)))
     return pipeline

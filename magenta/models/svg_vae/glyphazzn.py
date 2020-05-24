@@ -85,6 +85,7 @@ class GlyphAzznProblem(problem.Problem):
     def generate_data(self, data_dir, tmp_dir, task_id=-1):
         filepath_fns = {
             problem.DatasetSplit.TRAIN: self.training_filepaths,
+            problem.DatasetSplit.EVAL: self.test_filepaths,
             problem.DatasetSplit.TEST: self.test_filepaths,
         }
 

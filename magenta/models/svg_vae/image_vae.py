@@ -128,8 +128,7 @@ class ImageVAE(t2t_model.T2TModel):
             log_sigma = x[..., self.hparams.bottleneck_bits:]
             epsilon = tf.random_normal(x_shape[:-1] + [z_size])
             z = mu + tf.exp(log_sigma / 2) * epsilon
-            kl = 0.5 * tf.reduce_mean(
-                tf.exp(log_sigma) + tf.square(mu) - 1. - log_sigma, axis=-1)
+            kl = 0.5 * tf.reduce_mean(tf.exp(log_sigma) + tf.square(mu) - 1. - log_sigma, axis=-1)
             # This is the 'free bits' trick mentioned in Kingma et al. (2016)
             free_bits = self.hparams.free_bits
             kl_loss = tf.reduce_mean(tf.maximum(kl - free_bits, 0.0))

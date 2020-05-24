@@ -24,7 +24,6 @@ from tensor2tensor.layers import modalities
 import tensorflow.compat.v1 as tf  # noqa
 
 
-
 # pylint: disable=redefined-outer-name
 # pylint: disable=unused-variable
 _summarized_losses = False  # pylint: disable=invalid-name

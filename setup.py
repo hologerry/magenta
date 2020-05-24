@@ -22,7 +22,7 @@ from setuptools import setup
 # execute (e.g., tensorflow, pretty_midi, etc.).
 # Makes the __version__ variable available.
 with open('magenta/version.py') as in_file:
-  exec(in_file.read())  # pylint: disable=exec-used
+    exec(in_file.read())  # pylint: disable=exec-used
 
 REQUIRED_PACKAGES = [
     'IPython',
@@ -138,7 +138,7 @@ CONSOLE_SCRIPTS = [
 
 setup(
     name='magenta',
-    version=__version__,  # pylint: disable=undefined-variable
+    version=__version__,  # noqa
     description='Use machine learning to create art and music',
     long_description='',
     url='https://magenta.tensorflow.org/',
