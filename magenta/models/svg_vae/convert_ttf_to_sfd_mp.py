@@ -14,7 +14,7 @@ valid_fonts = open('svg_vae_data/font_id_split_name.txt', 'r').readlines()
 fonts_file_path = 'svg_vae_data/ttf_fonts'
 sfd_path = 'svg_vae_data/sfd_font_glyphs_mp'
 
-process_nums = mp.cpu_count() - 2
+process_nums = 40
 lines_num = len(valid_fonts)
 lines_num_per_process = lines_num // process_nums
 
