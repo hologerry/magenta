@@ -38,7 +38,6 @@ URL_SPLITS = 'svg_vae_data/font_id_split_name.txt'
 
 
 class IdentityEncoder(object):
-
     def encode(self, inputs):
         return inputs
 
@@ -85,10 +84,9 @@ class GlyphAzznProblem(problem.Problem):
     def generate_data(self, data_dir, tmp_dir, task_id=-1):
         filepath_fns = {
             problem.DatasetSplit.TRAIN: self.training_filepaths,
-            problem.DatasetSplit.EVAL: self.test_filepaths,
+            # problem.DatasetSplit.EVAL: self.test_filepaths,
             problem.DatasetSplit.TEST: self.test_filepaths,
         }
-
         split_paths = [(split['split'], filepath_fns[split['split']](
             data_dir, split['shards'], shuffled=False))
             for split in self.dataset_splits]
@@ -98,12 +96,10 @@ class GlyphAzznProblem(problem.Problem):
 
         if self.is_generate_per_split:
             for split, paths in split_paths:
-                generator_utils.generate_files(
-                    self.generate_encoded_samples(data_dir, tmp_dir, split), paths)
+                generator_utils.generate_files(self.generate_encoded_samples(data_dir, tmp_dir, split), paths)
         else:
             generator_utils.generate_files(
-                self.generate_encoded_samples(
-                    data_dir, tmp_dir, problem.DatasetSplit.TRAIN), all_paths)
+                self.generate_encoded_samples(data_dir, tmp_dir, problem.DatasetSplit.TRAIN), all_paths)
 
         generator_utils.shuffle_dataset(all_paths)
 
@@ -122,14 +118,13 @@ class GlyphAzznProblem(problem.Problem):
 
     def generate_samples(self, data_dir, tmp_dir, dataset_split):
         """Generate samples of target svg commands."""
-        if not hasattr(self, 'splits'):
-            tf.logging.info(
-                'Loading binary_fp: train/test from {}'.format(URL_SPLITS))
-            self.splits = {}
-            for line in tf.gfile.Open(URL_SPLITS, 'r').read().split('\n'):
-                if line:
-                    line = line.split(', ')
-                    self.splits[line[0]] = line[1]
+        # if not hasattr(self, 'splits'):
+        tf.logging.info('Loading binary_fp: train/test from {}'.format(URL_SPLITS))
+        self.splits = {}
+        for line in tf.gfile.Open(URL_SPLITS, 'r').read().split('\n'):
+            if line:
+                line = line.split(', ')
+                self.splits[line[0]] = line[1]
 
         if not tf.gfile.Exists(data_dir):
             tf.gfile.MakeDirs(data_dir)
@@ -156,8 +151,12 @@ class GlyphAzznProblem(problem.Problem):
                 example.ParseFromString(serialized_example)
 
                 # determing whether this example belongs to a fontset in train or test
-                this_bfp = str(
-                    example.features.feature['binary_fp'].bytes_list.value[0])
+                this_bfp = example.features.feature['binary_fp'].bytes_list.value
+                # this_bfp = [str(x) for x in example.features.feature['binary_fp'].bytes_list.value[0]]
+                this_bfp = b''.join(this_bfp).decode('ascii')
+                if len(this_bfp) == 0:
+                    continue
+
                 if this_bfp not in self.splits:
                     # randomly sample 10% to be test, the rest is train
                     should_be_test = np.random.random() < 0.1
@@ -167,18 +166,10 @@ class GlyphAzznProblem(problem.Problem):
                     continue
 
                 yield {
-                    'targets_sln': np.array(
-                        example.features.feature['seq_len'].int64_list.value).astype(
-                            np.int64).tolist(),
-                    'targets_cls': np.array(
-                        example.features.feature['class'].int64_list.value).astype(
-                            np.int64).tolist(),
-                    'targets_rel': np.array(
-                        example.features.feature['sequence'].float_list.value).astype(
-                            np.float32).tolist(),
-                    'targets_rnd': np.array(
-                        example.features.feature['rendered'].float_list.value).astype(
-                            np.float32).tolist()
+                    'targets_sln': np.array(example.features.feature['seq_len'].int64_list.value).astype(np.int64).tolist(),
+                    'targets_cls': np.array(example.features.feature['class'].int64_list.value).astype(np.int64).tolist(),
+                    'targets_rel': np.array(example.features.feature['sequence'].float_list.value).astype(np.float32).tolist(),
+                    'targets_rnd': np.array(example.features.feature['rendered'].float_list.value).astype(np.float32).tolist()
                 }
 
     def example_reading_spec(self):
