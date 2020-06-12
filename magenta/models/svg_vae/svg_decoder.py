@@ -27,6 +27,7 @@ from tensor2tensor.utils import trainer_lib
 import tensorflow.compat.v1 as tf  # noqa
 
 from tensorflow.contrib import rnn as contrib_rnn  # noqa
+import numpy as np
 
 
 @registry.register_model

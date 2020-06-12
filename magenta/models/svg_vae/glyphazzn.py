@@ -34,7 +34,7 @@ import tensorflow.compat.v1 as tf  # noqa
 # (Run t2t datagen on GlyphAzznProblem to convert these into a t2t dataset)
 RAW_STAT_FILE = 'svg_vae_data/final-dataset/final-dataset-stats-00000-of-00001'
 RAW_DATA_FILES = 'svg_vae_data/final-dataset/final-dataset*'
-URL_SPLITS = 'svg_vae_data/font_id_split_name.txt'
+URL_SPLITS = 'svg_vae_data/font_id_split_name_eval.txt'
 
 
 class IdentityEncoder(object):
@@ -56,6 +56,9 @@ class GlyphAzznProblem(problem.Problem):
         return [{
             'split': problem.DatasetSplit.TRAIN,
             'shards': 90,
+        }, {
+            'split': problem.DatasetSplit.EVAL,
+            'shards': 10,
         }, {
             'split': problem.DatasetSplit.TEST,
             'shards': 10,
@@ -84,7 +87,7 @@ class GlyphAzznProblem(problem.Problem):
     def generate_data(self, data_dir, tmp_dir, task_id=-1):
         filepath_fns = {
             problem.DatasetSplit.TRAIN: self.training_filepaths,
-            # problem.DatasetSplit.EVAL: self.test_filepaths,
+            problem.DatasetSplit.EVAL: self.dev_filepaths,
             problem.DatasetSplit.TEST: self.test_filepaths,
         }
         split_paths = [(split['split'], filepath_fns[split['split']](
