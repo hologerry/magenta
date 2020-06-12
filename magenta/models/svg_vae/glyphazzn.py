@@ -121,7 +121,7 @@ class GlyphAzznProblem(problem.Problem):
         # if not hasattr(self, 'splits'):
         tf.logging.info('Loading binary_fp: train/test from {}'.format(URL_SPLITS))
         self.splits = {}
-        for line in tf.gfile.Open(URL_SPLITS, 'r').read().split('\n'):
+        for line in tf.gfile.Open(URL_SPLITS, 'rb').read().split('\n'):
             if line:
                 line = line.split(', ')
                 self.splits[line[0]] = line[1]
@@ -186,9 +186,9 @@ class GlyphAzznProblem(problem.Problem):
         if not hasattr(self, 'mean_npz'):
             mean_filename = os.path.join(hparams.data_dir, 'mean.npz')
             stdev_filename = os.path.join(hparams.data_dir, 'stdev.npz')
-            with tf.gfile.Open(mean_filename, 'rb') as f:
+            with tf.gfile.Open(mean_filename, 'r') as f:
                 self.mean_npz = np.load(f)
-            with tf.gfile.Open(stdev_filename, 'rb') as f:
+            with tf.gfile.Open(stdev_filename, 'r') as f:
                 self.stdev_npz = np.load(f)
 
         example['targets_cls'] = tf.reshape(example['targets_cls'], [1])
@@ -231,9 +231,9 @@ class GlyphAzznProblem(problem.Problem):
             if not hasattr(self, 'mean_npz'):
                 mean_filename = os.path.join(hparams.data_dir, 'mean.npz')
                 stdev_filename = os.path.join(hparams.data_dir, 'stdev.npz')
-                with tf.gfile.open(mean_filename, 'rb') as f:
+                with tf.gfile.open(mean_filename, 'r') as f:
                     self.mean_npz = np.load(f)
-                with tf.gfile.open(stdev_filename, 'rb') as f:
+                with tf.gfile.open(stdev_filename, 'r') as f:
                     self.stdev_npz = np.load(f)
 
             values = []
