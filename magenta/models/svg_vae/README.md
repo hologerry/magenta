@@ -97,19 +97,12 @@ You're done re-creating the dataset, and ready to train the models.
 
 To train the VAE, run:
 ```
-python t2t_trainer.py --logtostderr--problem glyph_azzn_problem --data_dir svg_vae_data glyphazzn_final_t2t_dataset --output_dir saved_models/image_vae --model image_vae --hparams_set image_vae --train_steps 100000
+python t2t_trainer.py --logtostderr--problem glyph_azzn_problem --data_dir svg_vae_data/final-dataset --output_dir saved_models/image_vae --model image_vae --hparams_set image_vae --train_steps 100000
 ```
 
 After the vae is done training, train the SVG decoder like so:
 ```
-python t2t_trainer.py --logtostderr \
-  --problem glyph_azzn_problem \
-  --data_dir /path/to/glyphazzn_final_t2t_dataset/ \
-  --output_dir /path/to/saved_models/svg_decoder \
-  --model svg_decoder \
-  --hparams_set svg_decoder \
-  --train_steps 300000 \
-  --hparams="vae_ckpt_dir=/path/to/saved_models/image_vae,vae_data_dir=/path/to/glyphazzn_final_t2t_dataset/"
+python t2t_trainer.py --logtostderr --problem glyph_azzn_problem --data_dir svg_vae_data/final-dataset --output_dir saved_models/svg_decoder --model svg_decoder --hparams_set svg_decoder --train_steps 300000 --hparams="vae_ckpt_dir=saved_models/image_vae,vae_data_dir=/path/to/glyphazzn_final_t2t_dataset/"
 ```
 Note that if you train the vae with different hparams, you must also set
 `vae_hparams`. If you change the problem, you must set `vae_problem`.
