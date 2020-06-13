@@ -25,7 +25,9 @@ from magenta.tensor2tensor import problems  # noqa
 from tensor2tensor.bin import t2t_trainer
 import tensorflow.compat.v1 as tf  # noqa
 
-
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config)
 
 def main(argv):
     t2t_trainer.main(argv)

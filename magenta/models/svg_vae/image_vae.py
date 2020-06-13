@@ -237,7 +237,7 @@ def image_vae():
     """Basic Image VAE model hparams."""
     hparams = common_hparams.basic_params1()
     hparams.daisy_chain_variables = False
-    hparams.batch_size = 256
+    hparams.batch_size = 32
     hparams.hidden_size = 32
     hparams.initializer = 'uniform_unit_scaling'
     hparams.initializer_gain = 1.0

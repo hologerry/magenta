@@ -62,7 +62,7 @@ REQUIRED_PACKAGES = [
     # 0.8.0, which causes problems with tensor2tensor.
     'dm-sonnet < 1.36.0',  # Sonnet 2 requires TF2.
     'sox >= 1.3.7',
-    'tensorflow >= 1.15.0, < 2.0.0',  # Magenta is not yet TF2 compatible.
+    'tensorflow-gpu >= 1.15.0, < 2.0.0',  # Magenta is not yet TF2 compatible.
     'tensorflow-datasets >= 1.0.2',
     # Pinned to be compatible with tensor2tensor requirements.
     'tensorflow-probability == 0.7.0',
