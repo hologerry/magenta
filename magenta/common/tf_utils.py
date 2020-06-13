@@ -15,7 +15,6 @@
 """Tensorflow-related utilities."""
 
 import tensorflow.compat.v1 as tf  # noqa
-
 from tensorflow.contrib import training as contrib_training  # noqa
 
 

@@ -21,7 +21,6 @@ from magenta.common import concurrency
 import tensorflow.compat.v1 as tf  # noqa
 
 
-
 class ConcurrencyTest(tf.test.TestCase):
 
     def testSleeper_SleepUntil(self):

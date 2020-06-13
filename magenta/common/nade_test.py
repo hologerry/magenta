@@ -18,7 +18,6 @@ from magenta.common.nade import Nade
 import tensorflow.compat.v1 as tf  # noqa
 
 
-
 class NadeTest(tf.test.TestCase):
 
     def testInternalBias(self):

@@ -18,7 +18,6 @@ from magenta.common import beam_search
 import tensorflow.compat.v1 as tf  # noqa
 
 
-
 class BeamSearchTest(tf.test.TestCase):
 
     def _generate_step_fn(self, sequences, states, scores):
