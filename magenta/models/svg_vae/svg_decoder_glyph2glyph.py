@@ -64,15 +64,59 @@ class SVGDecoder(t2t_model.T2TModel):
 
         return sampled_bottleneck
 
+    def cls_embedding(self, sources_cls, sources_fnt, targets_cls, targets_fnt, hparams):
+        cls_size = 52
+        cls_embedding_size = 16
+        fnt_size = 36632
+        fnt_embedding_size = 128
+
+        with tf.variable_scope(tf.VariableScope(tf.AUTO_REUSE, ''),
+                               reuse=tf.AUTO_REUSE, auxiliary_name_scope=False):
+            W_cls = tf.Variable(tf.random.uniform([cls_size, cls_embedding_size], -1.0, 1.0))
+            embedded_sources_cls = tf.nn.embedding_lookup(W_cls, sources_cls)
+            embedded_targets_cls = tf.nn.embedding_lookup(W_cls, targets_cls)
+            W_fnt = tf.Variable(tf.random.uniform([fnt_size, fnt_embedding_size], -1.0, 1.0))
+            embedded_sources_fnt = tf.nn.embedding_lookup(W_fnt, sources_fnt)
+            embedded_targets_fnt = tf.nn.embedding_lookup(W_fnt, targets_fnt)
+            src_cls = tf.layers.dense(embedded_sources_cls, 32, activation=None)
+            # src_cls = tf.nn.relu(src_cls)
+            src_fnt = tf.layers.dense(embedded_sources_fnt, 64, activation=None)
+            # src_fnt = tf.nn.relu(src_fnt)
+            tgt_cls = tf.layers.dense(embedded_targets_cls, 32, activation=None)
+            # tgt_cls = tf.nn.relu(tgt_cls)
+            tgt_fnt = tf.layers.dense(embedded_targets_fnt, 64, activation=None)
+            # tgt_fnt = tf.nn.relu(tgt_fnt)
+            emd = tf.concat([src_cls, src_fnt, tgt_cls, tgt_fnt], -1)
+            ret = tf.layers.dense(emd, 64, activation='relu')
+        return ret
+
     def render2cmd_v3_internal(self, features, hparams, train):
         # inputs and targets are both sequences with
         # shape = [batch, seq_len, 1, hparams.problem.feature_dim]
-        targets = features['targets']
+        all_targets = features['targets']
+        all_targets_cls = features['targets_cls']
+        all_targets_font_cls = features['targets_fnt']
+        all_batch_size = common_layers.shape_list(all_targets)[0]
+        batch_size = all_batch_size // 2
+        sources = all_targets[:batch_size, ...]
+        sources_cls = all_targets_cls[:batch_size, ...]
+        sources_fnt = all_targets_font_cls[:batch_size, ...]
+        targets = all_targets[batch_size:, ...]
+        targets_cls = all_targets_cls[batch_size:, ...]
+        targets_fnt = all_targets_font_cls[batch_size:, ...]
+
         losses = {}
 
-        sampled_bottleneck = self.pretrained_visual_encoder(features, hparams)
-        if hparams.sg_bottleneck:
-            sampled_bottleneck = tf.stop_gradient(sampled_bottleneck)
+        # sampled_bottleneck = self.pretrained_visual_encoder(features, hparams)
+        # if hparams.sg_bottleneck:
+        #     sampled_bottleneck = tf.stop_gradient(sampled_bottleneck)
+        _, encoder_output_states = self.lstm_encoder(common_layers.flatten4d3d(sources), hparams)
+        embd = self.cls_embedding(sources_cls, sources_fnt, targets_cls, targets_fnt)
+        sampled_bottleneck = tf.concat([encoder_output_states, embd], -1)
+        print(features['targets'].shape)
+        print('run stacking...')
+        print(sampled_bottleneck.shape)
+        print(sources.shape)
 
         with tf.variable_scope('render2cmd_v3_internal'):
             # override bottleneck, or return it, if requested
@@ -126,6 +170,42 @@ class SVGDecoder(t2t_model.T2TModel):
             ret = tf.expand_dims(decoder_outputs, axis=2)
 
         return ret, losses
+
+    def lstm_encoder(self, inputs, hparams):
+        batch_size = common_layers.shape_list(inputs)[0]
+        length = 51
+        # a 4-layer LSTM
+        cell = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
+        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
+            cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell, output_keep_prob=0.5)
+
+        cell1 = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
+        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
+            cell1 = tf.nn.rnn_cell.DropoutWrapper(cell=cell1, output_keep_prob=0.5)
+
+        cell2 = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
+        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
+            cell2 = tf.nn.rnn_cell.DropoutWrapper(cell=cell2, output_keep_prob=0.5)
+
+        cell3 = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
+        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
+            cell3 = tf.nn.rnn_cell.DropoutWrapper(cell=cell3, output_keep_prob=0.5)
+
+        stack = tf.nn.rnn_cell.MultiRNNCell([cell, cell1, cell2, cell3], state_is_tuple=True)
+        initial_state = stack.zero_state(batch_size, dtype=tf.float32)
+        # a two layer LSTM
+        le_output, le_output_states = tf.nn.dynamic_rnn(
+            cell=stack,
+            inputs=inputs,
+            sequence_length=tf.fill([batch_size], length),
+            initial_state=initial_state,
+            dtype=tf.float32,
+            time_major=False
+        )
+        # print('check lstm encoder')
+        # print(le_output_states)
+        # input()
+        return le_output, le_output_states
 
     def lstm_decoder_infer(self, inputs, sequence_length, hparams, clss, train,
                            initial_state=None, bottleneck=None):

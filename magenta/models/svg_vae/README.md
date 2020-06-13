@@ -97,7 +97,7 @@ You're done re-creating the dataset, and ready to train the models.
 
 To train the VAE, run:
 ```
-python t2t_trainer.py --logtostderr--problem glyph_azzn_problem --data_dir svg_vae_data/final-dataset --output_dir saved_models/image_vae --model image_vae --hparams_set image_vae --train_steps 100000
+python t2t_trainer.py --logtostderr --problem glyph_azzn_problem --data_dir svg_vae_data/final-dataset --output_dir saved_models/image_vae --model image_vae --hparams_set image_vae --train_steps 100000
 ```
 
 After the vae is done training, train the SVG decoder like so:

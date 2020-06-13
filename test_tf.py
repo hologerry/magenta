@@ -71,30 +71,37 @@ with tf.Session() as sess:
 
     # predcit = tf.random.uniform((2, 5, 4), minval=0, maxval=1, dtype=tf.float32)
     # target = tf.random.uniform((2, 5, 4), minval=0, maxval=2, dtype=tf.int32)
-    predict = tf.constant([[[0.370561,   0.7522373,  0.962854,   0.78139925],
-                            [0.35318124, 0.55829847, 0.21254015, 0.97762775],
-                            [0.7895678,  0.47163403, 0.20040119, 0.9747666 ],
-                            [0.0747689,  0.85168886, 0.74427426, 0.7529695 ],
-                            [0.04231274, 0.12493503, 0.5645406,  0.15124023]],
-                            [[0.22381783, 0.40880632, 0.740329,   0.00489283],
-                            [0.33797348, 0.64474237, 0.9960165,  0.33216643],
-                            [0.9271157,  0.5983815,  0.8915962,  0.91998374],
-                            [0.8761481,  0.9494686,  0.0476774,  0.58984673],
-                            [0.5242083,  0.30677414, 0.13274765, 0.8846445 ]]], dtype=tf.float32)
-    target = tf.constant([[[0., 0., 0., 0.],
-                            [0., 0., 0., 0.],
-                            [0., 0., 0., 1.],
-                            [1., 0., 0., 0.],
-                            [1., 0., 0., 0.]],
-                            [[0., 0., 0., 0.],
-                            [0., 0., 1., 0.],
-                            [0., 0., 1., 0.],
-                            [0., 0., 1., 0.],
-                            [0., 0., 0., 1.]]], dtype=tf.float32)
+    # predict = tf.constant([[[0.370561,   0.7522373,  0.962854,   0.78139925],
+    #                         [0.35318124, 0.55829847, 0.21254015, 0.97762775],
+    #                         [0.7895678,  0.47163403, 0.20040119, 0.9747666 ],
+    #                         [0.0747689,  0.85168886, 0.74427426, 0.7529695 ],
+    #                         [0.04231274, 0.12493503, 0.5645406,  0.15124023]],
+    #                         [[0.22381783, 0.40880632, 0.740329,   0.00489283],
+    #                         [0.33797348, 0.64474237, 0.9960165,  0.33216643],
+    #                         [0.9271157,  0.5983815,  0.8915962,  0.91998374],
+    #                         [0.8761481,  0.9494686,  0.0476774,  0.58984673],
+    #                         [0.5242083,  0.30677414, 0.13274765, 0.8846445 ]]], dtype=tf.float32)
+    # target = tf.constant([[[0., 0., 0., 0.],
+    #                         [0., 0., 0., 0.],
+    #                         [0., 0., 0., 1.],
+    #                         [1., 0., 0., 0.],
+    #                         [1., 0., 0., 0.]],
+    #                         [[0., 0., 0., 0.],
+    #                         [0., 0., 1., 0.],
+    #                         [0., 0., 1., 0.],
+    #                         [0., 0., 1., 0.],
+    #                         [0., 0., 0., 1.]]], dtype=tf.float32)
     # target = tf.cast(target, tf.float32)
-    print(predict.eval())
-    print(target.eval())
-    softmax_xent_loss = tf.nn.softmax_cross_entropy_with_logits(labels=target, logits=predict)
-    print(softmax_xent_loss.get_shape())
-    softmax_xent_loss = tf.reduce_mean(softmax_xent_loss)
-    print(softmax_xent_loss.eval())
+    # print(predict.eval())
+    # print(target.eval())
+    # softmax_xent_loss = tf.nn.softmax_cross_entropy_with_logits(labels=target, logits=predict)
+    # print(softmax_xent_loss.get_shape())
+    # softmax_xent_loss = tf.reduce_mean(softmax_xent_loss)
+    # print(softmax_xent_loss.eval())
+    clss = tf.random.uniform((4, ), minval=0, maxval=10, dtype=tf.int64)
+    print(clss.eval())
+    W1 = tf.Variable(tf.random.uniform([10, 8], -1.0, 1.0), name="W")
+    embedded_clss = tf.nn.embedding_lookup(W1, clss)
+    print(embedded_clss.get_shape())
+    embedded_clsses = tf.expand_dims(embedded_clss, -1)
+    print(embedded_clsses.get_shape())

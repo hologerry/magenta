@@ -172,14 +172,16 @@ class GlyphAzznProblem(problem.Problem):
                     'targets_sln': np.array(example.features.feature['seq_len'].int64_list.value).astype(np.int64).tolist(),
                     'targets_cls': np.array(example.features.feature['class'].int64_list.value).astype(np.int64).tolist(),
                     'targets_rel': np.array(example.features.feature['sequence'].float_list.value).astype(np.float32).tolist(),
-                    'targets_rnd': np.array(example.features.feature['rendered'].float_list.value).astype(np.float32).tolist()
+                    'targets_rnd': np.array(example.features.feature['rendered'].float_list.value).astype(np.float32).tolist(),
+                    'targets_fnt': np.array(example.features.feature['binary_fp'].int64_list.value).astype(np.int64).tolist(),
                 }
 
     def example_reading_spec(self):
         data_fields = {'targets_rel': tf.FixedLenFeature([51*10], tf.float32),
                        'targets_rnd': tf.FixedLenFeature([64*64], tf.float32),
                        'targets_sln': tf.FixedLenFeature([1], tf.int64),
-                       'targets_cls': tf.FixedLenFeature([1], tf.int64)}
+                       'targets_cls': tf.FixedLenFeature([1], tf.int64),
+                       'targets_fnt': tf.FixedLenFeature([1], tf.int64)}
 
         data_items_to_decoders = None
         return (data_fields, data_items_to_decoders)
@@ -195,6 +197,7 @@ class GlyphAzznProblem(problem.Problem):
                 self.stdev_npz = np.load(f)
 
         example['targets_cls'] = tf.reshape(example['targets_cls'], [1])
+        example['targets_fnt'] = tf.reshape(example['targets_fnt'], [1])
         example['targets_sln'] = tf.reshape(example['targets_sln'], [1])
 
         example['targets_rel'] = tf.reshape(example['targets_rel'], [51, 1, 10])
