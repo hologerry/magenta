@@ -120,7 +120,6 @@ class SVGDecoder(t2t_model.T2TModel):
         embd = self.cls_embedding(sources_cls, sources_fnt, targets_cls, targets_fnt)
         sampled_bottleneck = embd
         print("sample_bottleneck.....", sampled_bottleneck.shape)
-        print("sample batch size", common_layers.shape_list(sampled_bottleneck)[0])
 
         with tf.variable_scope('render2cmd_v3_internal'):
             # override bottleneck, or return it, if requested

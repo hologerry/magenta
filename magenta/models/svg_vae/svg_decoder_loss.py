@@ -47,12 +47,14 @@ def _get_mdn_loss(logmix, mean, logstd, y, batch_mask, dont_reduce_loss):
     return -tf.reduce_mean(tf.reduce_sum(v, axis=3))
 
 
-def real_svg_loss(top_out, targets, model_hparams, vocab_size,
+def real_svg_loss(top_out, all_targets, model_hparams, vocab_size,
                   weights_fn):
     """Computes loss for svg decoder model."""
     # targets already come in 10-dim mode, no need to so any mdn stuff
     # obviously.
-    print("targets", targets.shape)
+    all_batch_size = common_layers.shape_list(all_targets)[0]
+    batch_size = all_batch_size // 2
+    targets = all_targets[batch_size:, ...]
     targets_commands_rel = targets[..., :4]
     targets_args_rel = targets[..., 4:]
 
