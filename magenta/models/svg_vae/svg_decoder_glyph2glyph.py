@@ -38,7 +38,7 @@ class SVGDecoder(t2t_model.T2TModel):
         train = self._hparams.mode == tf.estimator.ModeKeys.TRAIN
         return self.render2cmd_v3_internal(features, self._hparams, train)
 
-    def pretrained_visual_encoder(self, features, hparams):
+    def _pretrained_visual_encoder(self, features, hparams):
         # we want the exact hparams used for training this vv
         vae_hparams = trainer_lib.create_hparams(
             hparams.vae_hparam_set, hparams.vae_hparams,
@@ -64,7 +64,7 @@ class SVGDecoder(t2t_model.T2TModel):
 
         return sampled_bottleneck
 
-    def cls_embedding(self, sources_cls, sources_fnt, targets_cls, targets_fnt, hparams):
+    def cls_embedding(self, sources_cls, sources_fnt, targets_cls, targets_fnt):
         cls_size = 52
         cls_embedding_size = 16
         fnt_size = 36632
@@ -74,20 +74,26 @@ class SVGDecoder(t2t_model.T2TModel):
                                reuse=tf.AUTO_REUSE, auxiliary_name_scope=False):
             W_cls = tf.Variable(tf.random.uniform([cls_size, cls_embedding_size], -1.0, 1.0))
             embedded_sources_cls = tf.nn.embedding_lookup(W_cls, sources_cls)
+            embedded_sources_cls = tf.squeeze(embedded_sources_cls, 1)
             embedded_targets_cls = tf.nn.embedding_lookup(W_cls, targets_cls)
+            embedded_targets_cls = tf.squeeze(embedded_targets_cls, 1)
+
             W_fnt = tf.Variable(tf.random.uniform([fnt_size, fnt_embedding_size], -1.0, 1.0))
             embedded_sources_fnt = tf.nn.embedding_lookup(W_fnt, sources_fnt)
+            embedded_sources_fnt = tf.squeeze(embedded_sources_fnt, 1)
             embedded_targets_fnt = tf.nn.embedding_lookup(W_fnt, targets_fnt)
-            src_cls = tf.layers.dense(embedded_sources_cls, 32, activation=None)
+            embedded_targets_fnt = tf.squeeze(embedded_targets_fnt, 1)
+
+            src_cls = tf.layers.dense(embedded_sources_cls, 16, activation=None)
             # src_cls = tf.nn.relu(src_cls)
-            src_fnt = tf.layers.dense(embedded_sources_fnt, 64, activation=None)
+            src_fnt = tf.layers.dense(embedded_sources_fnt, 32, activation=None)
             # src_fnt = tf.nn.relu(src_fnt)
-            tgt_cls = tf.layers.dense(embedded_targets_cls, 32, activation=None)
+            tgt_cls = tf.layers.dense(embedded_targets_cls, 16, activation=None)
             # tgt_cls = tf.nn.relu(tgt_cls)
-            tgt_fnt = tf.layers.dense(embedded_targets_fnt, 64, activation=None)
+            tgt_fnt = tf.layers.dense(embedded_targets_fnt, 32, activation=None)
             # tgt_fnt = tf.nn.relu(tgt_fnt)
             emd = tf.concat([src_cls, src_fnt, tgt_cls, tgt_fnt], -1)
-            ret = tf.layers.dense(emd, 64, activation='relu')
+            ret = tf.layers.dense(emd, 32, activation='relu')
         return ret
 
     def render2cmd_v3_internal(self, features, hparams, train):
@@ -112,11 +118,8 @@ class SVGDecoder(t2t_model.T2TModel):
         #     sampled_bottleneck = tf.stop_gradient(sampled_bottleneck)
         _, encoder_output_states = self.lstm_encoder(common_layers.flatten4d3d(sources), hparams)
         embd = self.cls_embedding(sources_cls, sources_fnt, targets_cls, targets_fnt)
-        sampled_bottleneck = tf.concat([encoder_output_states, embd], -1)
-        print(features['targets'].shape)
-        print('run stacking...')
-        print(sampled_bottleneck.shape)
-        print(sources.shape)
+        sampled_bottleneck = embd
+        print("sample_bottleneck.....", sampled_bottleneck.shape)
 
         with tf.variable_scope('render2cmd_v3_internal'):
             # override bottleneck, or return it, if requested
@@ -137,8 +140,7 @@ class SVGDecoder(t2t_model.T2TModel):
             # unbottleneck back to LSTMStateTuple
             dec_initial_state = []
             for hi in range(hparams.num_hidden_layers):
-                unbottleneck = self.unbottleneck(sampled_bottleneck, unbottleneck_dim,
-                                                 name_append='_{}'.format(hi))
+                unbottleneck = self.unbottleneck(sampled_bottleneck, unbottleneck_dim, name_append='_{}'.format(hi))
                 dec_initial_state.append(
                     tf.nn.rnn_cell.LSTMStateTuple(
                         c=unbottleneck[:, :unbottleneck_dim // 2],
@@ -158,13 +160,13 @@ class SVGDecoder(t2t_model.T2TModel):
             if hparams.mode == tf.estimator.ModeKeys.PREDICT:
                 decoder_outputs, _ = self.lstm_decoder_infer(
                     common_layers.flatten4d3d(shifted_targets),
-                    targets_length, hparams_decoder, features['targets_cls'],
+                    targets_length, hparams_decoder, targets_cls,
                     train, initial_state=dec_initial_state,
                     bottleneck=sampled_bottleneck)
             else:
                 decoder_outputs, _ = self.lstm_decoder(
                     common_layers.flatten4d3d(shifted_targets),
-                    targets_length, hparams_decoder, features['targets_cls'],
+                    targets_length, hparams_decoder, targets_cls,
                     train, initial_state=dec_initial_state,
                     bottleneck=sampled_bottleneck)
             ret = tf.expand_dims(decoder_outputs, axis=2)
@@ -409,7 +411,7 @@ def svg_decoder():
     """Basic hparams for SVG decoder."""
     hparams = common_hparams.basic_params1()
     hparams.daisy_chain_variables = False
-    hparams.batch_size = 512
+    hparams.batch_size = 128
     hparams.hidden_size = 1024
     hparams.num_hidden_layers = 2
     hparams.initializer = 'uniform_unit_scaling'

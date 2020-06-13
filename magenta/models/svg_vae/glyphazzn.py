@@ -173,7 +173,7 @@ class GlyphAzznProblem(problem.Problem):
                     'targets_cls': np.array(example.features.feature['class'].int64_list.value).astype(np.int64).tolist(),
                     'targets_rel': np.array(example.features.feature['sequence'].float_list.value).astype(np.float32).tolist(),
                     'targets_rnd': np.array(example.features.feature['rendered'].float_list.value).astype(np.float32).tolist(),
-                    'targets_fnt': np.array(example.features.feature['binary_fp'].int64_list.value).astype(np.int64).tolist(),
+                    'targets_fnt': np.array([int(this_bfp)]).astype(np.int64).tolist(),
                 }
 
     def example_reading_spec(self):

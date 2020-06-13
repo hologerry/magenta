@@ -36,8 +36,12 @@ def _tf_lognormal(y, mean, logstd, logsqrttwopi):
 def _get_mdn_loss(logmix, mean, logstd, y, batch_mask, dont_reduce_loss):
     """Computes MDN loss term for svg decoder model."""
     logsqrttwopi = np.log(np.sqrt(2.0 * np.pi))
-
+    print(logmix.shape)
+    print(mean.shape)
+    print(logstd.shape)
+    print(y.shape)
     v = logmix + _tf_lognormal(y, mean, logstd, logsqrttwopi)
+    print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     v = tf.reduce_logsumexp(v, 1, keepdims=True)
     v = tf.reshape(v, [-1, 51, 1, 6])
 
@@ -48,11 +52,12 @@ def _get_mdn_loss(logmix, mean, logstd, y, batch_mask, dont_reduce_loss):
     return -tf.reduce_mean(tf.reduce_sum(v, axis=3))
 
 
-def real_svg_loss(top_out, targets, model_hparams, unused_vocab_size,
-                  unused_weights_fn):
+def real_svg_loss(top_out, targets, model_hparams, vocab_size,
+                  weights_fn):
     """Computes loss for svg decoder model."""
     # targets already come in 10-dim mode, no need to so any mdn stuff
     # obviously.
+    print("targets", targets.shape)
     targets_commands_rel = targets[..., :4]
     targets_args_rel = targets[..., 4:]
 
@@ -63,7 +68,6 @@ def real_svg_loss(top_out, targets, model_hparams, unused_vocab_size,
         # args are [batch, seq, 1, 6*3*num_mix]. want [batch * seq * 6, 3*num_mix]
         args = tf.reshape(args, [-1, 3 * num_mix])
         out_logmix, out_mean, out_logstd = _get_mdn_coef(args)
-
         # before we compute mdn_args_loss, we need to create a mask for elements
         # to ignore on it.
         # create mask
@@ -75,6 +79,7 @@ def real_svg_loss(top_out, targets, model_hparams, unused_vocab_size,
 
         # calculate mdn loss, which auto masks it out
         targs_flat = tf.reshape(targets_args_rel, [-1, 1])
+        print("targs_flat", targs_flat.shape)
         mdn_loss = _get_mdn_loss(out_logmix, out_mean, out_logstd, targs_flat, mask,
                                  model_hparams.dont_reduce_loss)
 
@@ -104,7 +109,6 @@ def real_svg_loss(top_out, targets, model_hparams, unused_vocab_size,
 
     # this tells us not to re-create the summary ops
     _summarized_losses = True
-
     return loss, tf.constant(1.0)
 
 
@@ -146,8 +150,7 @@ def real_svg_top(body_output, unused_targets, model_hparams, unused_vocab_size,
 
             # apply temperature, do softmax
             command = tf.identity(ret[:, :, :, :4]) / temperature
-            command = tf.exp(command -
-                             tf.reduce_max(command, axis=[-1], keepdims=True))
+            command = tf.exp(command - tf.reduce_max(command, axis=[-1], keepdims=True))
             command = command / tf.reduce_sum(command, axis=[-1], keepdims=True)
 
             # sample from the given probs, this is the same as get_pi_idx,
@@ -165,8 +168,7 @@ def real_svg_top(body_output, unused_targets, model_hparams, unused_vocab_size,
 
             # apply temp to logmix
             out_logmix = tf.identity(out_logmix) / temperature
-            out_logmix = tf.exp(out_logmix -
-                                tf.reduce_max(out_logmix, axis=[-1], keepdims=True))
+            out_logmix = tf.exp(out_logmix - tf.reduce_max(out_logmix, axis=[-1], keepdims=True))
             out_logmix = out_logmix / tf.reduce_sum(
                 out_logmix, axis=[-1], keepdims=True)
             # get_pi_idx
@@ -193,6 +195,6 @@ def real_svg_top(body_output, unused_targets, model_hparams, unused_vocab_size,
     return ret
 
 
-def real_svg_bottom(features, unused_model_hparams, unused_vocab_size):
+def real_svg_bottom(features, model_hparams, vocab_size):
     with tf.variable_scope('real_bottom', reuse=tf.AUTO_REUSE):
         return tf.identity(features)
