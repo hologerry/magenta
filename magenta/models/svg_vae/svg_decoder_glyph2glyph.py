@@ -119,7 +119,6 @@ class SVGDecoder(t2t_model.T2TModel):
         _, encoder_output_states = self.lstm_encoder(common_layers.flatten4d3d(sources), hparams)
         embd = self.cls_embedding(sources_cls, sources_fnt, targets_cls, targets_fnt)
         sampled_bottleneck = embd
-        print("sample_bottleneck.....", sampled_bottleneck.shape)
 
         with tf.variable_scope('render2cmd_v3_internal'):
             # override bottleneck, or return it, if requested
@@ -149,7 +148,6 @@ class SVGDecoder(t2t_model.T2TModel):
             dec_initial_state = tuple(dec_initial_state)
 
             shifted_targets = common_layers.shift_right(targets)
-            print("shifted", common_layers.shape_list(shifted_targets)[0])
             # Add 1 to account for the padding added to the left from shift_right
             targets_length = common_layers.length_from_embedding(shifted_targets) + 1
 

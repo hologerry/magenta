@@ -71,7 +71,6 @@ class SVGDecoder(t2t_model.T2TModel):
         losses = {}
 
         sampled_bottleneck = self.pretrained_visual_encoder(features, hparams)
-        print("sample bottleeeee raw", sampled_bottleneck.shape)
         if hparams.sg_bottleneck:
             sampled_bottleneck = tf.stop_gradient(sampled_bottleneck)
 

@@ -13,10 +13,6 @@
 # limitations under the License.
 
 """Defines SVG decoder loss."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import numpy as np
 
 from tensor2tensor.layers import common_layers
@@ -76,12 +72,8 @@ def real_svg_loss(top_out, all_targets, model_hparams, vocab_size,
 
         # calculate mdn loss, which auto masks it out
         targs_flat = tf.reshape(targets_args_rel, [-1, 1])
-        print("targs_flat", targs_flat.shape)
-        print("targs_flat batch", common_layers.shape_list(targs_flat)[0])
         mdn_loss = _get_mdn_loss(out_logmix, out_mean, out_logstd, targs_flat, mask,
                                  model_hparams.dont_reduce_loss)
-        print("mdn loss ok", mdn_loss.shape)
-        print("mdn loss batch", common_layers.shape_list(mdn_loss)[0])
         # we dont have to manually mask out the softmax xent loss because
         # internally, each dimention of the xent loss is multiplied by the
         # given probability in the label for that dim. So for a one-hot label [0,
