@@ -36,12 +36,7 @@ def _tf_lognormal(y, mean, logstd, logsqrttwopi):
 def _get_mdn_loss(logmix, mean, logstd, y, batch_mask, dont_reduce_loss):
     """Computes MDN loss term for svg decoder model."""
     logsqrttwopi = np.log(np.sqrt(2.0 * np.pi))
-    print(logmix.shape)
-    print(mean.shape)
-    print(logstd.shape)
-    print(y.shape)
     v = logmix + _tf_lognormal(y, mean, logstd, logsqrttwopi)
-    print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     v = tf.reduce_logsumexp(v, 1, keepdims=True)
     v = tf.reshape(v, [-1, 51, 1, 6])
 
@@ -80,9 +75,11 @@ def real_svg_loss(top_out, targets, model_hparams, vocab_size,
         # calculate mdn loss, which auto masks it out
         targs_flat = tf.reshape(targets_args_rel, [-1, 1])
         print("targs_flat", targs_flat.shape)
+        print("targs_flat batch", common_layers.shape_list(targs_flat)[0])
         mdn_loss = _get_mdn_loss(out_logmix, out_mean, out_logstd, targs_flat, mask,
                                  model_hparams.dont_reduce_loss)
-
+        print("mdn loss ok", mdn_loss.shape)
+        print("mdn loss batch", common_layers.shape_list(mdn_loss)[0])
         # we dont have to manually mask out the softmax xent loss because
         # internally, each dimention of the xent loss is multiplied by the
         # given probability in the label for that dim. So for a one-hot label [0,

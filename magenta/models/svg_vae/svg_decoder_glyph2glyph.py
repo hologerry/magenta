@@ -120,6 +120,7 @@ class SVGDecoder(t2t_model.T2TModel):
         embd = self.cls_embedding(sources_cls, sources_fnt, targets_cls, targets_fnt)
         sampled_bottleneck = embd
         print("sample_bottleneck.....", sampled_bottleneck.shape)
+        print("sample batch size", common_layers.shape_list(sampled_bottleneck)[0])
 
         with tf.variable_scope('render2cmd_v3_internal'):
             # override bottleneck, or return it, if requested
@@ -149,6 +150,7 @@ class SVGDecoder(t2t_model.T2TModel):
             dec_initial_state = tuple(dec_initial_state)
 
             shifted_targets = common_layers.shift_right(targets)
+            print("shifted", common_layers.shape_list(shifted_targets)[0])
             # Add 1 to account for the padding added to the left from shift_right
             targets_length = common_layers.length_from_embedding(shifted_targets) + 1
 
@@ -375,6 +377,7 @@ class SVGDecoder(t2t_model.T2TModel):
     def unbottleneck(self, x, res_size, reuse=tf.AUTO_REUSE, name_append=''):
         with tf.variable_scope('unbottleneck{}'.format(name_append), reuse=reuse):
             x = tf.layers.dense(x, res_size, name='dense', activation='tanh')
+            print("unbottle", common_layers.shape_list(x)[0])
             return x
 
     def create_initial_input_for_decode(self, batch_size):
