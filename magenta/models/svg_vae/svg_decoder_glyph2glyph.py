@@ -69,6 +69,10 @@ class SVGDecoder(t2t_model.T2TModel):
         cls_embedding_size = 16
         fnt_size = 36632
         fnt_embedding_size = 128
+        print(common_layers.shape_list(sources_cls))
+        print(common_layers.shape_list(sources_fnt))
+        print(common_layers.shape_list(targets_cls))
+        print(common_layers.shape_list(targets_fnt))
 
         with tf.variable_scope(tf.VariableScope(tf.AUTO_REUSE, ''),
                                reuse=tf.AUTO_REUSE, auxiliary_name_scope=False):
@@ -140,10 +144,12 @@ class SVGDecoder(t2t_model.T2TModel):
             dec_initial_state = []
             for hi in range(hparams.num_hidden_layers):
                 unbottleneck = self.unbottleneck(sampled_bottleneck, unbottleneck_dim, name_append='_{}'.format(hi))
-                dec_initial_state.append(
-                    tf.nn.rnn_cell.LSTMStateTuple(
-                        c=unbottleneck[:, :unbottleneck_dim // 2],
-                        h=unbottleneck[:, unbottleneck_dim // 2:]))
+                c_e, h_e = encoder_output_states[hi]
+                print("c e shape", c_e.shape)
+                print("unbottleneck", unbottleneck.shape)
+                dec_initial_state.append(tf.nn.rnn_cell.LSTMStateTuple(
+                        c=tf.concat([unbottleneck[:, :unbottleneck_dim // 2], c_e], 1),
+                        h=tf.concat([unbottleneck[:, unbottleneck_dim // 2:], h_e], 1)))
 
             dec_initial_state = tuple(dec_initial_state)
 
