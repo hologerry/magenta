@@ -11,3 +11,4 @@ build/
 .idea/
 svg_vae_data*
 saved_models/*
+*.html

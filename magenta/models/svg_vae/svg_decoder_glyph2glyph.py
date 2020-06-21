@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Lint as: python3
 """Defines the SVGDecoder model."""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import copy
 
@@ -38,7 +40,7 @@ class SVGDecoder(t2t_model.T2TModel):
         train = self._hparams.mode == tf.estimator.ModeKeys.TRAIN
         return self.render2cmd_v3_internal(features, self._hparams, train)
 
-    def _pretrained_visual_encoder(self, features, hparams):
+    def pretrained_visual_encoder(self, features, hparams):
         # we want the exact hparams used for training this vv
         vae_hparams = trainer_lib.create_hparams(
             hparams.vae_hparam_set, hparams.vae_hparams,
@@ -69,10 +71,10 @@ class SVGDecoder(t2t_model.T2TModel):
         cls_embedding_size = 16
         fnt_size = 36632
         fnt_embedding_size = 128
-        print("sources_cls ------------------------------------------------------------", sources_cls.get_shape())
-        print("sources_fnt ------------------------------------------------------------", sources_fnt.get_shape())
-        print("targets_cls ------------------------------------------------------------", targets_cls.get_shape())
-        print("targets_fnt ------------------------------------------------------------", targets_fnt.get_shape())
+        print(common_layers.shape_list(sources_cls))
+        print(common_layers.shape_list(sources_fnt))
+        print(common_layers.shape_list(targets_cls))
+        print(common_layers.shape_list(targets_fnt))
 
         with tf.variable_scope(tf.VariableScope(tf.AUTO_REUSE, ''),
                                reuse=tf.AUTO_REUSE, auxiliary_name_scope=False):
@@ -103,6 +105,7 @@ class SVGDecoder(t2t_model.T2TModel):
     def render2cmd_v3_internal(self, features, hparams, train):
         # inputs and targets are both sequences with
         # shape = [batch, seq_len, 1, hparams.problem.feature_dim]
+        print("render2cmd_v3_internal render2cmd_v3_internalrender2cmd_v3_internalrender2cmd_v3_internalrender2cmd_v3_internal")
         all_targets = features['targets']
         all_targets_cls = features['targets_cls']
         all_targets_font_cls = features['targets_fnt']
@@ -116,44 +119,61 @@ class SVGDecoder(t2t_model.T2TModel):
         targets_fnt = all_targets_font_cls[batch_size:, ...]
 
         losses = {}
-
         # sampled_bottleneck = self.pretrained_visual_encoder(features, hparams)
+
         # if hparams.sg_bottleneck:
         #     sampled_bottleneck = tf.stop_gradient(sampled_bottleneck)
-        _, encoder_output_states = self.lstm_encoder(common_layers.flatten4d3d(sources), hparams)
         embd = self.cls_embedding(sources_cls, sources_fnt, targets_cls, targets_fnt)
-        print("embd -------------------------------- size", embd.get_shape())
+        print("embd embd embd embd embd embd embd ", embd.shape)
         sampled_bottleneck = embd
 
         with tf.variable_scope('render2cmd_v3_internal'):
             # override bottleneck, or return it, if requested
-            if 'bottleneck' in features:
-                if common_layers.shape_list(features['bottleneck'])[0] == 0:
-                    # return sampled_bottleneck,
-                    # set losses['training'] = 0 so self.top() doesn't get called on it
-                    return sampled_bottleneck, {'training': 0.0}
-                else:
-                    # we want to use the given bottleneck
-                    sampled_bottleneck = features['bottleneck']
+            # if 'bottleneck' in features:
+            #     if common_layers.shape_list(features['bottleneck'])[0] == 0:
+            #         # return sampled_bottleneck,
+            #         # set losses['training'] = 0 so self.top() doesn't get called on it
+            #         print("RETURNRETURNRETURNRETURNRETURNRETURNRETURNRETURNRETURNRETURNRETURN")
+            #         return sampled_bottleneck, {'training': 0.0}
+            #     else:
+            #         # we want to use the given bottleneck
+            #         sampled_bottleneck = features['bottleneck']
 
             # finalize bottleneck
             unbottleneck_dim = hparams.hidden_size * 2  # twice because using LSTM
             if hparams.twice_decoder:
                 unbottleneck_dim = unbottleneck_dim * 2
 
-            # unbottleneck back to LSTMStateTuple
             dec_initial_state = []
+
+            # LSTM encoder
+            _, encoder_output_states = self.lstm_encoder(common_layers.flatten4d3d(sources), hparams)
+
+            print("targets shape targets shape targets shape targets shape targets shape ", targets.shape)
+            print('run stacking...')
+            print("sample bottleneck shape sample bottleneck shape sample bottleneck shape sample bottleneck shape ", sampled_bottleneck.shape)
+            print("sources shape sources shapesources shapesources shapesources shapesources shape", sources.shape)
+            # input()
             for hi in range(hparams.num_hidden_layers):
-                unbottleneck = self.unbottleneck(sampled_bottleneck, unbottleneck_dim, name_append='_{}'.format(hi))
-                c_e, h_e = encoder_output_states[hi]
-                print("c e shape", c_e.shape)
-                print("unbottleneck", unbottleneck.shape)
-                dec_initial_state.append(tf.nn.rnn_cell.LSTMStateTuple(
-                        c=tf.concat([unbottleneck[:, :unbottleneck_dim // 2], c_e], 1),
-                        h=tf.concat([unbottleneck[:, unbottleneck_dim // 2:], h_e], 1)))
+                unbottleneck = self.unbottleneck(sampled_bottleneck, unbottleneck_dim,
+                                                 name_append='_{}'.format(hi))
+                c, h = encoder_output_states[hi]
+                # print(unbottleneck.shape)
+                # print(c.shape, h.shape)
+                # first_dim = common_layers.shape_list(unbottleneck)[0]
+                # print(first_dim)
+                # c = tf.tile(c,[first_dim,1])
+                # h = tf.tile(h,[first_dim,1])
+                # input()
+                dec_initial_state.append(
+                    tf.nn.rnn_cell.LSTMStateTuple(
+                        c=tf.concat([unbottleneck[:, :unbottleneck_dim // 2], c], 1),
+                        h=tf.concat([unbottleneck[:, unbottleneck_dim // 2:], h], 1)))
 
             dec_initial_state = tuple(dec_initial_state)
-
+            # print('checkshape dec_initial_state')
+            # print(dec_initial_state)
+            # input()
             shifted_targets = common_layers.shift_right(targets)
             # Add 1 to account for the padding added to the left from shift_right
             targets_length = common_layers.length_from_embedding(shifted_targets) + 1
@@ -175,45 +195,9 @@ class SVGDecoder(t2t_model.T2TModel):
                     targets_length, hparams_decoder, targets_cls,
                     train, initial_state=dec_initial_state,
                     bottleneck=sampled_bottleneck)
+
             ret = tf.expand_dims(decoder_outputs, axis=2)
-
         return ret, losses
-
-    def lstm_encoder(self, inputs, hparams):
-        batch_size = common_layers.shape_list(inputs)[0]
-        length = 51
-        # a 4-layer LSTM
-        cell = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
-        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
-            cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell, output_keep_prob=0.5)
-
-        cell1 = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
-        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
-            cell1 = tf.nn.rnn_cell.DropoutWrapper(cell=cell1, output_keep_prob=0.5)
-
-        cell2 = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
-        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
-            cell2 = tf.nn.rnn_cell.DropoutWrapper(cell=cell2, output_keep_prob=0.5)
-
-        cell3 = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
-        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
-            cell3 = tf.nn.rnn_cell.DropoutWrapper(cell=cell3, output_keep_prob=0.5)
-
-        stack = tf.nn.rnn_cell.MultiRNNCell([cell, cell1, cell2, cell3], state_is_tuple=True)
-        initial_state = stack.zero_state(batch_size, dtype=tf.float32)
-        # a two layer LSTM
-        le_output, le_output_states = tf.nn.dynamic_rnn(
-            cell=stack,
-            inputs=inputs,
-            sequence_length=tf.fill([batch_size], length),
-            initial_state=initial_state,
-            dtype=tf.float32,
-            time_major=False
-        )
-        # print('check lstm encoder')
-        # print(le_output_states)
-        # input()
-        return le_output, le_output_states
 
     def lstm_decoder_infer(self, inputs, sequence_length, hparams, clss, train,
                            initial_state=None, bottleneck=None):
@@ -293,8 +277,10 @@ class SVGDecoder(t2t_model.T2TModel):
                     dtype=tf.float32, time_major=False)
 
             next_step = tf.expand_dims(next_step, [1])
-            logits_so_far = tf.concat([logits_so_far, next_step], 1)
 
+            logits_so_far = tf.concat([logits_so_far, next_step], 1)
+            # print('concat success')
+            # input()
             # flatten state
             next_state = tuple((s.c, s.h) for s in next_state)
 
@@ -358,18 +344,56 @@ class SVGDecoder(t2t_model.T2TModel):
 
         with tf.variable_scope('pre_decoder', reuse=tf.AUTO_REUSE):
             inputs = tf.layers.dense(inputs, hparams.hidden_size, name='bottom')
-            inputs = tf.nn.tanh(inputs)  # [batch, 51, 1024]
+            inputs = tf.nn.tanh(inputs)
+        # print(inputs)
+        # print(initial_state)
+        # input()
         with tf.variable_scope('lstm_decoder', reuse=tf.AUTO_REUSE):
-            output = tf.nn.dynamic_rnn(
+            return tf.nn.dynamic_rnn(
                 layers, inputs, sequence_length, initial_state=initial_state,
                 dtype=tf.float32, time_major=False)
-            return output
+
+    def lstm_encoder(self, inputs, hparams):
+        batch_size = common_layers.shape_list(inputs)[0]
+        length = 51
+        # a 4-layer LSTM
+        cell = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
+        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
+            cell = tf.nn.rnn_cell.DropoutWrapper(cell=cell, output_keep_prob=0.5)
+
+        cell1 = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
+        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
+            cell1 = tf.nn.rnn_cell.DropoutWrapper(cell=cell1, output_keep_prob=0.5)
+
+        cell2 = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
+        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
+            cell2 = tf.nn.rnn_cell.DropoutWrapper(cell=cell2, output_keep_prob=0.5)
+
+        cell3 = tf.nn.rnn_cell.LSTMCell(256, state_is_tuple=True)
+        if hparams.mode != tf.estimator.ModeKeys.PREDICT:
+            cell3 = tf.nn.rnn_cell.DropoutWrapper(cell=cell3, output_keep_prob=0.5)
+
+        stack = tf.nn.rnn_cell.MultiRNNCell([cell, cell1, cell2, cell3], state_is_tuple=True)
+        initial_state = stack.zero_state(batch_size, dtype=tf.float32)
+        # a two layer LSTM
+        le_output, le_output_states = tf.nn.dynamic_rnn(
+            cell=stack,
+            inputs=inputs,
+            sequence_length=tf.fill([batch_size], length),
+            initial_state=initial_state,
+            dtype=tf.float32,
+            time_major=False
+        )
+        # print('check lstm encoder')
+        # print(le_output_states)
+        # input()
+        return le_output, le_output_states
 
     def lstm_cell(self, hparams, train):
         keep_prob = 1.0 - hparams.rec_dropout * tf.to_float(train)
 
         recurrent_dropout_cell = contrib_rnn.LayerNormBasicLSTMCell(
-            hparams.hidden_size,
+            hparams.hidden_size + 256,
             layer_norm=hparams.layer_norm,
             dropout_keep_prob=keep_prob)
 
@@ -381,14 +405,13 @@ class SVGDecoder(t2t_model.T2TModel):
     def unbottleneck(self, x, res_size, reuse=tf.AUTO_REUSE, name_append=''):
         with tf.variable_scope('unbottleneck{}'.format(name_append), reuse=reuse):
             x = tf.layers.dense(x, res_size, name='dense', activation='tanh')
-            print("unbottle", common_layers.shape_list(x)[0])
             return x
 
     def create_initial_input_for_decode(self, batch_size):
         # Create an initial output tensor. This will be passed
         # to the infer_step, which adds one timestep at every iteration.
         dim = self._problem_hparams.vocab_size['targets']
-        hdim = self._hparams.hidden_size
+        hdim = self._hparams.hidden_size + 256
         initial_output = tf.zeros((batch_size, 0, 1, hdim), dtype=tf.float32)
         zero_pad = tf.zeros((batch_size, 1, 1, dim), dtype=tf.float32)
         # Hack: foldl complains when the output shape is less specified than the
@@ -468,7 +491,7 @@ def svg_decoder():
     hparams.add_hparam('vae_problem', 'glyph_azzn_problem')
 
     # data format hparams
-    hparams.add_hparam('num_categories', 62)
+    hparams.add_hparam('num_categories', 52)
 
     # problem hparams (required, don't modify)
     hparams.add_hparam('absolute', False)
