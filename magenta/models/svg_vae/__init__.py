@@ -16,4 +16,5 @@
 
 from magenta.models.svg_vae import glyphazzn
 from magenta.models.svg_vae import image_vae
-from magenta.models.svg_vae import svg_decoder_ref_glyph2g
+# from magenta.models.svg_vae import svg_decoder
+from magenta.models.svg_vae import svg_decoder_glyph2glyph

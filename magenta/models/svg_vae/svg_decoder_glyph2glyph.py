@@ -69,10 +69,10 @@ class SVGDecoder(t2t_model.T2TModel):
         cls_embedding_size = 16
         fnt_size = 36632
         fnt_embedding_size = 128
-        print(common_layers.shape_list(sources_cls))
-        print(common_layers.shape_list(sources_fnt))
-        print(common_layers.shape_list(targets_cls))
-        print(common_layers.shape_list(targets_fnt))
+        print("sources_cls ------------------------------------------------------------", sources_cls.get_shape())
+        print("sources_fnt ------------------------------------------------------------", sources_fnt.get_shape())
+        print("targets_cls ------------------------------------------------------------", targets_cls.get_shape())
+        print("targets_fnt ------------------------------------------------------------", targets_fnt.get_shape())
 
         with tf.variable_scope(tf.VariableScope(tf.AUTO_REUSE, ''),
                                reuse=tf.AUTO_REUSE, auxiliary_name_scope=False):
@@ -122,6 +122,7 @@ class SVGDecoder(t2t_model.T2TModel):
         #     sampled_bottleneck = tf.stop_gradient(sampled_bottleneck)
         _, encoder_output_states = self.lstm_encoder(common_layers.flatten4d3d(sources), hparams)
         embd = self.cls_embedding(sources_cls, sources_fnt, targets_cls, targets_fnt)
+        print("embd -------------------------------- size", embd.get_shape())
         sampled_bottleneck = embd
 
         with tf.variable_scope('render2cmd_v3_internal'):
