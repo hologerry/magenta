@@ -1,5 +1,5 @@
 from __future__ import print_function
-import os
+
 import copy
 import logging
 import matplotlib.pyplot as plt
@@ -7,10 +7,9 @@ import numpy as np
 import re
 import tensorflow as tf
 import warnings
-
-# from colabtools import publish
+import os
+#from colabtools import publish
 from tensor2tensor.utils import registry
-from magenta.models import svg_vae
 from magenta.models.svg_vae import svg_utils
 from tensor2tensor.layers import common_layers
 from tensor2tensor.utils import trainer_lib
@@ -44,7 +43,7 @@ def initialize_model(problem_name, data_dir, hparam_set, hparams, model_name,
     # create dataset iterator from problem definition
     dataset = problem.dataset(Modes.PREDICT, dataset_split=split,
                               data_dir=data_dir, shuffle_files=False,
-                              hparams=hparams).batch(52*2)
+                              hparams=hparams).batch(1)
     iterator = tfe.Iterator(dataset)
 
     # finalize/initialize model
@@ -60,10 +59,9 @@ def get_bottleneck(features, model):
     features = features.copy()
     # the presence of a 'bottleneck' feature with 0 dimensions indicates that the
     # model should return the bottleneck from the input image
-    features['bottleneck'] = tf.zeros((2, 32))
-    print("get_bottleneck shape", features['bottleneck'].get_shape())
-    print("Entering model Entering model Entering model Entering model Entering model")
+    features['bottleneck'] = tf.zeros((0, 128))
     return model(features)[0]
+    # return features['diff']
 
 
 def infer_from_bottleneck(features, bottleneck, model, out='cmd'):
@@ -82,17 +80,10 @@ def infer_from_bottleneck(features, bottleneck, model, out='cmd'):
         batch_size + tf.shape(features['targets'])[1:].numpy().tolist())
     features['targets_psr'] = tf.zeros(
         batch_size + tf.shape(features['targets_psr'])[1:].numpy().tolist())
-
-    if out == 'cmd':
-        # using the SVG Decoder
-        return model.infer(features, decode_length=0)
-    # using the Image Decoder (from the Image VAE)
-    return model(features)
-
-def infer_from_source(features, model, out='cmd'):
-    """Returns a sample from a decoder, conditioned on the given a latent."""
-    features = features.copy()
-
+    # features['source_psr'] = tf.zeros(
+    #    batch_size + tf.shape(features['source_psr'])[1:].numpy().tolist())
+    # features['source'] = tf.zeros(
+    #    batch_size + tf.shape(features['source'])[1:].numpy().tolist())
     if out == 'cmd':
         # using the SVG Decoder
         return model.infer(features, decode_length=0)
@@ -135,6 +126,7 @@ def _tokenize(pathdef):
 
 def path_string_to_tokenized_commands(path):
     """Tokenizes the given path string.
+
     E.g.:
         Given M 0.5 0.5 l 0.25 0.25 z
         Returns [['M', '0.5', '0.5'], ['l', '0.25', '0.25'], ['z']]
@@ -367,10 +359,13 @@ class OutputStream(object):
     def show(self):
         if out == 'img':
             plt.show()
+            plt.savefig('tmp.png')
         else:
+            f = open('result.html', 'w')
+            for ch in self.result_html:
+                f.write(ch)
+            f.close()
             # publish.html(self.result_html)
-            with open("svg_decoder_output/gly2glyph_fnt_keep_encoder_glyph.html", 'w') as f:
-                f.write(self.result_html)
 
 
 def _tile(features, key, dims):
@@ -380,7 +375,7 @@ def _tile(features, key, dims):
 
 
 def class_switch(problem_name, data_dir, hparam_set, hparams, model_name,
-                     ckpt_dir, out='cmd', split=Modes.TRAIN, ex_id=297):
+                 ckpt_dir, out='cmd', split=Modes.TRAIN, ex_id=297):
     """Decodes one example of each class, conditioned on ex_id-th example."""
     model, iterator, hparams = initialize_model(
         problem_name, data_dir, hparam_set, hparams, model_name,
@@ -389,40 +384,43 @@ def class_switch(problem_name, data_dir, hparam_set, hparams, model_name,
     num_classes = hparams.num_categories
 
     # get the ex_id-th example from the dataset
+    features1 = None
+    clss_batch = None
     for i in range(ex_id):
         features1 = iterator.next()
+        clss_batch = features1['targets_cls']
 
-    for k, v, in features1.items():
-        print(k, v.get_shape())
+    for i in range(num_classes-1):
+        features_tmp = iterator.next()
+        features1['source'] = tf.concat([features1['source'], features_tmp['source']], 0)
+        features1['source_psr'] = tf.concat([features1['source_psr'], features_tmp['source_psr']], 0)
 
+        clss_batch = tf.concat([clss_batch, features_tmp['targets_cls']], 0)
+    features1 = _tile(features1, 'targets_psr', [num_classes, 1, 1])
     # create output_steam
     output_stream = OutputStream(out, 3, 26, data_dir)
-    output_stream.add_output(tf.expand_dims(features1['inputs'][0], 0))
+    output_stream.add_output(features1['inputs'])
     output_stream.add_white()
 
     # get bottleneck of the features we selected before
-    # bottleneck1 = get_bottleneck(features1, model)
-    # bottleneck1 = tf.tile(bottleneck1, [num_classes, 1])
-    # print("bottleneck1 size---------", bottleneck1.get_shape())
-
+    bottleneck1 = get_bottleneck(features1, model)
+    #bottleneck1 = tf.tile(bottleneck1, [num_classes, 1])
+    # print('getbottneck')
+    # print(bottleneck1)
+    # input()
     # create class batch
     new_features = copy.copy(features1)
-    clss_batch = tf.reshape([tf.constant([[clss]], dtype=tf.int64) for clss in range(num_classes)], [-1, 1])
-    print("clss batch clss batch clss batch", clss_batch.shape)
-    # new_features['targets_cls'] = tf.concat([new_features['targets_cls'][:52], clss_batch], 0)
-    new_features['targets_cls'] = tf.concat([clss_batch, clss_batch], 0)
-    print("new tgt cls new tgt cls new tgt cls new tgt cls", new_features['targets_cls'].get_shape())
-    # new_features['targets_fnt'] = features1['targets_fnt']
-    # print("tgt fnt", new_features['targets_fnt'].get_shape())
-    # new_features['targets'] = features1['targets']
-    # print("targets", new_features['targets'].get_shape())
-    # new_features = _tile(new_features, 'targets_psr', [num_classes, 1, 1])
-    # inp_target_dim = [num_classes, 1, 1, 1] if out == 'cmd' else [num_classes, 1]
-    # new_features = _tile(new_features, 'inputs', inp_target_dim)
-    # new_features = _tile(new_features, 'targets', inp_target_dim)
-
+    new_features['targets_cls'] = clss_batch
+    #new_features = _tile(new_features, 'targets_psr', [num_classes, 1, 1])
+    #new_features = _tile(new_features, 'source_psr', [num_classes, 1, 1])
+    inp_target_dim = [num_classes, 1, 1,
+                      1] if out == 'cmd' else [num_classes, 1]
+    new_features = _tile(new_features, 'inputs', inp_target_dim)
+    new_features = _tile(new_features, 'targets', inp_target_dim)
+    #new_features = _tile(new_features, 'source', inp_target_dim)
     # run model
-    output_batch = infer_from_source(new_features, model, out=out)
+    output_batch = infer_from_bottleneck(
+        new_features, bottleneck1, model, out=out)
 
     should_add_white = {12: 18, 56: 2}
 
@@ -437,212 +435,147 @@ def class_switch(problem_name, data_dir, hparam_set, hparams, model_name,
     output_stream.show()
 
 
+def interpolation(problem_name, data_dir, hparam_set, hparams, model_name,
+                  ckpt_dir, out='cmd', split=Modes.TRAIN,
+                  ex_id=297, ex_id2=110):
+    """Interpolates between two given icons in the dataset."""
+    model, iterator, hparams = initialize_model(
+        problem_name, data_dir, hparam_set, hparams, model_name,
+        ckpt_dir, split=split)
+
+    # get both latent spaces we will interpolate
+    features1 = None
+    for i in range(ex_id):
+        features1 = iterator.next()
+    bottleneck1 = get_bottleneck(features1, model)
+    features2 = None
+    for i in range(ex_id2):
+        features2 = iterator.next()
+    bottleneck2 = get_bottleneck(features2, model)
+
+    interpolation_weights = np.linspace(0, 1, 11, dtype=np.float32)
+
+    # show first latent's input
+    output_stream = OutputStream(out, 1, len(interpolation_weights), data_dir)
+    output_stream.add_output(features1['inputs'])
+    output_stream.add_spacing()
+
+    # prepare batch so we can get all interpolations in one go
+    num_batch = len(interpolation_weights)
+    new_features = copy.copy(features1)
+    all_bottlenecks = [(bottleneck1 + alpha * (bottleneck2 - bottleneck1))
+                       for alpha in interpolation_weights]
+    all_bottlenecks = tf.reshape(all_bottlenecks, [num_batch, -1])
+    inputs_targets_dim = [num_batch, 1, 1,
+                          1] if out == 'cmd' else [num_batch, 1]
+    new_features = _tile(new_features, 'inputs', inputs_targets_dim)
+    new_features = _tile(new_features, 'targets', inputs_targets_dim)
+    new_features = _tile(new_features, 'source', inputs_targets_dim)
+    new_features = _tile(new_features, 'targets_cls', [num_batch, 1])
+    new_features = _tile(new_features, 'targets_psr', [num_batch, 1, 1])
+
+    # run the decoder, conditioned on the bottleneck.
+    output_batch = infer_from_bottleneck(
+        new_features, all_bottlenecks, model, out=out)
+
+    # render outputs
+    output_batch = output_batch[0] if out == 'img' else output_batch['outputs']
+    for output in tf.split(output_batch, num_batch):
+        output_stream.add_output(output)
+
+    if 'targets_cls' in features1:
+        print('cls={}'.format(features1['targets_cls'][0][0]))
+
+    # add final image (direction towards which we were interpolating) and show
+    output_stream.add_spacing()
+    output_stream.add_output(features2['inputs'])
+    output_stream.show()
+
+
+def random_bottleneck(problem_name, data_dir, hparam_set, hparams, model_name,
+                      ckpt_dir, ex_id=1, out='cmd'):
+    """Decodes one example per class given randomly-sampled bottlenecks."""
+    model, iterator, hparams = initialize_model(
+        problem_name, data_dir, hparam_set, hparams, model_name, ckpt_dir)
+
+    num_classes = hparams.num_categories
+
+    features1 = None
+    clss_batch = None
+    for i in range(ex_id):
+        features1 = iterator.next()
+        clss_batch = features1['targets_cls']
+
+    for i in range(num_classes-1):
+        features_tmp = iterator.next()
+        features1['source'] = tf.concat(
+            [features1['source'], features_tmp['source']], 0)
+        #features1['source_psr'] = tf.concat([features1['source_psr'],features_tmp['source_psr']],0)
+        clss_batch = tf.concat([clss_batch, features_tmp['targets_cls']], 0)
+
+    # create randomly-sampled bottleneck
+    #features1 = iterator.next()
+    bottleneck_shape = [num_classes,
+                        tf.shape(get_bottleneck(features1, model))[-1]]
+    bottleneck1 = tf.random_normal(bottleneck_shape)
+
+    # create output_steam
+    output_stream = OutputStream(out, 3, num_classes//3 + 4, data_dir)
+
+    # prepare batch so we can get all classes in one go
+    new_features = copy.copy(features1)
+    # clss_batch = tf.reshape([tf.constant([[clss]], dtype=tf.int64)
+    #                         for clss in range(num_classes)], [-1, 1])
+    new_features['targets_cls'] = clss_batch
+    new_features = _tile(new_features, 'targets_psr', [num_classes, 1, 1])
+    new_features = _tile(new_features, 'source_psr', [num_classes, 1, 1])
+    inp_target_dim = [num_classes, 1, 1,
+                      1] if out == 'cmd' else [num_classes, 1]
+    new_features = _tile(new_features, 'inputs', inp_target_dim)
+    new_features = _tile(new_features, 'targets', inp_target_dim)
+    #new_features = _tile(new_features, 'source', inp_target_dim)
+    # run model
+    output_batch = infer_from_bottleneck(
+        new_features, bottleneck1, model, out=out)
+
+    # render outputs and show results
+    output_batch = output_batch[0] if out == 'img' else output_batch['outputs']
+    for output in tf.split(output_batch, num_classes):
+        output_stream.add_output(output)
+        if output_stream.ax_id == 10:
+            [output_stream.add_white() for _ in range(16)]
+
+    output_stream.show()
+
 # vae trained on external data, tested with external data
+
+
+# svg trained on external data, tested with external data
 problem = 'glyph_azzn_problem'
-data_dir = 'svg_vae_data/final-font-dataset/'
-model_name = 'svg_decoder'  # or svg_decoder
-hparam_set = 'svg_decoder'  # or svg_decoder
-hparams = ""
-ckpt_dir = 'saved_models/svg_decoder_enc_g2g/'
-out = 'img' if model_name == 'image_vae' else 'cmd'
+data_dir = '/home1/gaoy/svg/magenta/svg_vae_data/data-anypair/glyphazzn_final_t2t_dataset'
+model_name = 'svg_decoder'  # or image_vae
+hparam_set = 'svg_decoder'  # or image_vae
+ckpt_dir = '/home1/gaoy/svg/magenta/saved_models/svg_decoder_anypair_join_one_model'
+out = 'cmd'
+# /home1/gaoy/svg/magenta/ckpoint/usr/local/google/home/iraphael/dev/svg_vae/image_vae_external
+# /home1/gaoy/svg/magenta/saved_models/image_vae_gpu_3kfont
+# /home1/gaoy/svg/magenta/saved_models/svg_decoder_noref_30k
+# /home1/gaoy/svg/magenta/saved_models/svg_decoder_ref_30k
+# you can control sampling variance by changing the temperatures here
+new_hparams = 'mix_temperature={},gauss_temperature={}'.format(0.0001, 0.0001)
+hparams = new_hparams
+print('using {}'.format(new_hparams))
 
 print('class switch')
 class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-             out=out, split=Modes.TRAIN, ex_id=101)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=103)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=165)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=195)
+             out=out, split=Modes.TRAIN, ex_id=17)
+print('finish switch')
 
+# 4 ,6
 # print('interpolation')
 # interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=101, ex_id2=(102-101))
-# interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=96, ex_id2=(172-96))
-
-# print('random z per class')
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#                   out=out)
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
+#              out=out, ex_id=47, ex_id2=9)
+#print('random z per class')
+# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir, ex_id=2,
 #                  out=out)
-
-# vae trained on internal data, tested with internal data
-# problem = 'glyph_azzn_problem'
-# data_dir = '/path/to/internal_data/'
-# model_name = 'image_vae'  # or svg_decoder
-# hparam_set = 'image_vae'  # or svg_decoder
-# hparams = ""
-# ckpt_dir = '/path/to/image_vae_internal/'
-# out = 'img' if model_name == 'image_vae' else 'cmd'
-#
-# print('class switch')
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=131)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=120)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=68)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=69)
-#
-#
-# print('interpolation')
-# interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=131, ex_id2=(184-131))
-# interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=172, ex_id2=(198-172))
-#
-# print('random z per class')
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#                   out=out)
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#                   out=out)
-#
-#
-# # vae trained on internal data, tested with external data
-# problem = 'glyph_azzn_problem'
-# data_dir = '/path/to/external_data/'
-# model_name = 'image_vae'  # or svg_decoder
-# hparam_set = 'image_vae'  # or svg_decoder
-# hparams = ""
-# ckpt_dir = '/path/to/image_vae_internal/'
-# out = 'img' if model_name == 'image_vae' else 'cmd'
-#
-# print('class switch')
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=101)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=103)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=165)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=195)
-#
-# print('interpolation')
-# interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=101, ex_id2=(102-101))
-# interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=96, ex_id2=(172-96))
-#
-# print('random z per class')
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#                   out=out)
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#                   out=out)
-#
-# # svg trained on external data, tested with external data
-# problem = 'glyph_azzn_problem'
-# data_dir = '/path/to/external_data/'
-# model_name = 'svg_decoder'  # or image_vae
-# hparam_set = 'svg_decoder'  # or image_vae
-# hparams = ("vae_ckpt_dir=/path/to/image_vae_external,"
-#            "vae_data_dir=/path/to/external_data,vae_hparam_set=image_vae")
-# ckpt_dir = '/path/to/svg_decoder_external'
-# out = 'cmd'
-#
-# # you can control sampling variance by changing the temperatures here
-# new_hparams = 'mix_temperature={},gauss_temperature={}'.format(0.0001, 0.0001)
-# hparams = hparams + ',' + new_hparams
-# print('using {}'.format(new_hparams))
-#
-# print('class switch')
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=101)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=103)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=165)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=195)
-#
-# print('interpolation')
-# interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=101, ex_id2=(102-101))
-# interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=96, ex_id2=(172-96))
-#
-# print('random z per class')
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#                   out=out)
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#                   out=out)
-#
-#
-# # svg trained on internal data, tested with internal data
-# problem = 'glyph_azzn_problem'
-# data_dir = '/path/to/internal_data/'
-# model_name = 'svg_decoder'  # or image_vae,
-# hparam_set = 'svg_decoder'  # or image_vae,
-# hparams = ("vae_ckpt_dir=/path/to/image_vae_internal,"
-#            "vae_data_dir=/path/to/internal_data,vae_hparam_set=image_vae")
-# ckpt_dir = '/path/to/svg_decoder_internal'
-# out = 'cmd'
-#
-# # you can control sampling variance by changing the temperatures here
-# new_hparams = 'mix_temperature={},gauss_temperature={}'.format(0.0001, 0.0001)
-# hparams = hparams + ',' + new_hparams
-# print('using {}'.format(new_hparams))
-#
-# print('class switch')
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=131)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=120)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=68)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=69)
-#
-#
-# print('interpolation')
-# interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=131, ex_id2=(184-131))
-# interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=172, ex_id2=(198-172))
-#
-# print('random z per class')
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#                   out=out)
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#                   out=out)
-#
-#
-# # svg trained on internal data, tested with external data
-# problem = 'glyph_azzn_problem'
-# data_dir = '/path/to/external_data/'
-# model_name = 'svg_decoder'  # or image_vae,
-# hparam_set = 'svg_decoder'  # or image_vae,
-# hparams = ("vae_ckpt_dir=/path/to/image_vae_internal,"
-#            "vae_data_dir=/path/to/internal_data,vae_hparam_set=image_vae")
-# ckpt_dir = '/path/to/svg_decoder_internal'
-# out = 'cmd'
-#
-# # you can control sampling variance by changing the temperatures here
-# new_hparams = 'mix_temperature={},gauss_temperature={}'.format(0.0001, 0.0001)
-# hparams = hparams + ',' + new_hparams
-# print('using {}'.format(new_hparams))
-#
-# print('class switch')
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=101)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=103)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=165)
-# class_switch(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#              out=out, split=Modes.TRAIN, ex_id=195)
-#
-# print('interpolation')
-# interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=101, ex_id2=(102-101))
-# interpolation(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#               out=out, ex_id=96, ex_id2=(172-96))
-#
-# print('random z per class')
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#                   out=out)
-# random_bottleneck(problem, data_dir, hparam_set, hparams, model_name, ckpt_dir,
-#                   out=out)
-#
+# input()

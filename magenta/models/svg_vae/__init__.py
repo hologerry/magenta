@@ -14,7 +14,9 @@
 
 """Imports SVG VAE."""
 
-from magenta.models.svg_vae import glyphazzn
-from magenta.models.svg_vae import image_vae
+from magenta.models.svg_vae import glyphazzn_anypair
+from magenta.models.svg_vae import image_vae_joint
 # from magenta.models.svg_vae import svg_decoder
-from magenta.models.svg_vae import svg_decoder_glyph2glyph
+# from magenta.models.svg_vae import svg_decoder_glyph2glyph
+from magenta.models.svg_vae import svg_decoder_anypair_joint_vae_loss
+# from magenta.models.svg_vae import svg_decoder_anypair_joint_vae_one_model
